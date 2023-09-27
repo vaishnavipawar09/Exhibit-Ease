@@ -73,6 +73,8 @@ model Museum {
   state    String
   zip      Int
   type     MuseumType
+  openHour DateTime
+  closeHour DateTime
   Booking  Booking[]
   Promo    Promo[]
   Favorite Favorite[]
