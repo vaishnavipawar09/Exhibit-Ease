@@ -46,13 +46,10 @@ model User {
   emailVerified DateTime?
   image         String?
   payment       String?
-  role          Role       @default(C)
-  museum        Museum?    @relation(fields: [museumId], references: [id])
   accounts      Account[]
   sessions      Session[]
   Booking       Booking[]
   Favorite      Favorite[]
-  museumId      Int?
 }
 
 model VerificationToken {
@@ -64,26 +61,42 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Museum {
-  id       Int        @id @default(autoincrement())
+model Manager {
+  id       Int    @id @default(autoincrement())
   name     String
-  cost     Float
-  address  String
-  city     String
-  state    String
-  zip      Int
-  type     MuseumType
-  openHour DateTime
-  closeHour DateTime
+  museum   Museum @relation(fields: [museumId], references: [id])
+  museumId Int
+}
+
+model Employee {
+  id       Int       @id @default(autoincrement())
+  name     String
+  museum   Museum    @relation(fields: [museumId], references: [id])
   Booking  Booking[]
-  Promo    Promo[]
-  Favorite Favorite[]
-  User     User[]
+  museumId Int
+}
+
+model Museum {
+  id        Int        @id @default(autoincrement())
+  name      String
+  cost      Float
+  address   String
+  city      String
+  state     String
+  zip       Int
+  type      MuseumType
+  openHour  DateTime
+  closeHour DateTime
+  Booking   Booking[]
+  Promo     Promo[]
+  Favorite  Favorite[]
+  Employee  Employee[]
+  Manager   Manager[]
 }
 
 model Booking {
   id            Int         @id @default(autoincrement())
-  userId        String      @map("user_id")
+  userId        String?     @map("user_id")
   name          String
   bookingMade   DateTime
   visitInfo     DateTime
@@ -92,9 +105,11 @@ model Booking {
   totalVisitors Int
   promo         Promo?      @relation(fields: [promoId], references: [id])
   museum        Museum      @relation(fields: [museumId], references: [id])
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  employee      Employee?   @relation(fields: [employeeId], references: [id])
   museumId      Int
   promoId       Int?
+  employeeId    Int?
 }
 
 model Promo {
@@ -115,13 +130,6 @@ model Favorite {
   museum   Museum @relation(fields: [museumId], references: [id])
   userId   String
   museumId Int
-}
-
-enum Role {
-  C
-  M
-  O
-  T
 }
 
 enum MuseumType {
