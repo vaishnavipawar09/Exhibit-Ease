@@ -46,6 +46,7 @@ model User {
   emailVerified DateTime?
   image         String?
   payment       String?
+  phoneNumber   String?
   accounts      Account[]
   sessions      Session[]
   Booking       Booking[]
@@ -74,6 +75,11 @@ model Employee {
   museum   Museum    @relation(fields: [museumId], references: [id])
   Booking  Booking[]
   museumId Int
+}
+
+model Technician {
+  id   Int    @id @default(autoincrement())
+  name String
 }
 
 model Museum {
