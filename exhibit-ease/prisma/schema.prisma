@@ -83,21 +83,23 @@ model Technician {
 }
 
 model Museum {
-  id        Int        @id @default(autoincrement())
-  name      String
-  cost      Float
-  address   String
-  city      String
-  state     String
-  zip       Int
-  type      MuseumType
-  openHour  DateTime
-  closeHour DateTime
-  Booking   Booking[]
-  Promo     Promo[]
-  Favorite  Favorite[]
-  Employee  Employee[]
-  Manager   Manager[]
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  main_image  String?
+  cost        Float
+  address     String
+  city        String
+  state       String
+  zip         Int
+  type        MuseumType
+  openHour    DateTime
+  closeHour   DateTime
+  Booking     Booking[]
+  Promo       Promo[]
+  Favorite    Favorite[]
+  Employee    Employee[]
+  Manager     Manager[]
 }
 
 model Booking {
