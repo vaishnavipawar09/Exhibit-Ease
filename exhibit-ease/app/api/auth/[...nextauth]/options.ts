@@ -30,6 +30,15 @@ export const options: NextAuthOptions = {
             clientSecret: process.env.FACEBOOK_CLIENT_SECRET ?? ''
         })
     ],
+    // callbacks: {
+    //     async redirect(url, baseUrl) {
+    //       // Check if it's a sign-in and if the provider is Email
+    //       if (url === baseUrl && !user.name) {
+    //         return `${baseUrl}/add-name`;
+    //       }
+    //       return url;
+    //     },
+    //   },
     pages: {
         //     signIn: '/auth/signin',
         //     signOut: '/auth/signout',
