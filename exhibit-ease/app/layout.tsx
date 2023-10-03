@@ -1,7 +1,8 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Header from './Header'
+import Header from './components/Header'
+import Header2 from './components/Header'
 import { getServerSession } from 'next-auth';
 import SessionProvider from './components/SessionProvider';
 
@@ -24,8 +25,22 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <SessionProvider session={session}>
-          <Header />
-          {children}
+          <Header2 />
+          <div className="flex">
+            <div className="w-40 bg-red">
+              01
+            </div>
+            <div className="flex-grow bg-red-50">
+              {children}
+            </div>
+            <div className="w-40 bg-red">
+              03
+            </div>
+          </div>
+
+
+
+
         </SessionProvider>
       </body>
     </html>
