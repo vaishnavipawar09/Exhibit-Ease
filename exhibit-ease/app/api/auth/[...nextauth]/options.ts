@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from 'next-auth';
@@ -5,8 +6,8 @@ import type { NextAuthOptions } from "next-auth";
 import Email from "next-auth/providers/email";
 import FacebookProvider from "next-auth/providers/facebook"
 import GoogleProvider from "next-auth/providers/google"
+import { getSession } from "next-auth/react";
 
-const prisma = new PrismaClient();
 
 export const options: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
@@ -31,16 +32,6 @@ export const options: NextAuthOptions = {
             clientSecret: process.env.FACEBOOK_CLIENT_SECRET ?? ''
         })
     ],
-    callbacks: {
-        async redirect({ url, baseUrl }) {
-            const session = await getServerSession();
-            const user = session?.user;
-            if (url === baseUrl && user && !user.name) {
-                return `${baseUrl}/add-name`;
-            }
-            return url;
-        },
-    },
     pages: {
         //     signIn: '/auth/signin',
         //     signOut: '/auth/signout',
