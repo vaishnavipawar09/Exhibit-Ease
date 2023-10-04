@@ -31,40 +31,7 @@ function AuthSection() {
     </>
   )
 }
-
 const Header: React.FC = () => {
-  const router = useRouter();
-
-  return (
-    <nav className="flex flex-wrap items-center justify-between bg-[#551e19] p-6">
-
-      <div className="mr-6 flex flex-shrink-0 items-center text-white">
-        <Image src={logo_no_background} width={70} height={70} alt="Exhibit Ease Icon" className="pr-5" />
-      </div>
-      <div className="block w-full flex-grow lg:flex lg:w-auto lg:items-center">
-        <div className="text-base lg:flex-grow">
-          <Link
-            href="\"
-            className="mr-4 mt-4 block text-teal-200 hover:text-white lg:mt-0 lg:inline-block"
-          >
-            Home
-          </Link>
-          <Link
-            href="\about"
-            className="mr-4 mt-4 block text-teal-200 hover:text-white lg:mt-0 lg:inline-block"
-          >
-            About
-          </Link>
-        </div>
-        <div>
-          <AuthSection />
-        </div>
-      </div>
-    </nav>
-  );
-};
-
-const Header2: React.FC = () => {
   return <nav>
     <div className="flex bg-[#661900] max-w mx-auto items-center">
       <div className="flex-1 flex justify-left ml-10 mr-auto">
@@ -95,4 +62,4 @@ const Header2: React.FC = () => {
   </nav>
 }
 
-export default Header2;
+export default Header;

@@ -1,5 +1,6 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
+import { getServerSession } from 'next-auth';
 import type { NextAuthOptions } from "next-auth";
 import Email from "next-auth/providers/email";
 import FacebookProvider from "next-auth/providers/facebook"
@@ -30,15 +31,16 @@ export const options: NextAuthOptions = {
             clientSecret: process.env.FACEBOOK_CLIENT_SECRET ?? ''
         })
     ],
-    // callbacks: {
-    //     async redirect(url, baseUrl) {
-    //       // Check if it's a sign-in and if the provider is Email
-    //       if (url === baseUrl && !user.name) {
-    //         return `${baseUrl}/add-name`;
-    //       }
-    //       return url;
-    //     },
-    //   },
+    callbacks: {
+        async redirect({ url, baseUrl }) {
+            const session = await getServerSession();
+            const user = session?.user;
+            if (url === baseUrl && user && !user.name) {
+                return `${baseUrl}/add-name`;
+            }
+            return url;
+        },
+    },
     pages: {
         //     signIn: '/auth/signin',
         //     signOut: '/auth/signout',
