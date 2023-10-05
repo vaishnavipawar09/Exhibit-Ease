@@ -29,7 +29,7 @@ export default async function RootLayout({
             <div className="w-40 bg-red">
               01
             </div>
-            <div className="flex-grow bg-red-50">
+            <div className="flex-grow">
               {children}
             </div>
             <div className="w-40 bg-red">
