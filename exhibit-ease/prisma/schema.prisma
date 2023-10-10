@@ -83,10 +83,11 @@ model Technician {
 }
 
 model Museum {
-  id          Int        @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   name        String
   description String?
   main_image  String?
+  bg_image    String?
   cost        Float
   address     String
   city        String
@@ -100,6 +101,7 @@ model Museum {
   Favorite    Favorite[]
   Employee    Employee[]
   Manager     Manager[]
+  Slideshow   Slideshow[]
 }
 
 model Booking {
@@ -138,6 +140,12 @@ model Favorite {
   museum   Museum @relation(fields: [museumId], references: [id])
   userId   String
   museumId Int
+}
+
+model Slideshow {
+  imageId  String @id
+  museumId Int
+  museum   Museum @relation(fields: [museumId], references: [id])
 }
 
 enum MuseumType {
