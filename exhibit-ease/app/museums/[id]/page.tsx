@@ -16,14 +16,14 @@ export default async function Page({ params }: {
       style={{ backgroundImage: `linear-gradient(rgba(255, 255, 255, .4), rgba(255, 255, 255, .4)), url('${museum?.bg_image}')` }}>
       <div className="container mx-auto flex justify-between items-center h-full relative">
         {/* Museum image */}
-        <div className="w-1/2 flex items-center">
+        <div className="flex items-center">
           {museum && (
             <Image
               src={museum.main_image || ""}
               alt={museum.name}
               width={350}
               height={350}
-              className="rounded-xl shadow-lg"
+              className="w-[350px] h-[350px] rounded-xl shadow-lg"
             />
           )}
         </div>
