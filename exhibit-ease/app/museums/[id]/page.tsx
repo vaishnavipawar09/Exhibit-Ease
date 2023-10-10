@@ -13,13 +13,13 @@ export default async function Page({ params }: {
   return <main className="h-screen">
     {/* Top section */}
     <div className="relative pt-20 pb-10 px-5 md:px-20 bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "linear-gradient(rgba(255, 255, 255, .4), rgba(255, 255, 255, .4)), url('https://travel.usnews.com/images/NaturalHistoryMuseum_013_301047_20220629.jpg')" }}>
+      style={{ backgroundImage: `linear-gradient(rgba(255, 255, 255, .4), rgba(255, 255, 255, .4)), url('${museum?.bg_image}')` }}>
       <div className="container mx-auto flex justify-between items-center h-full relative">
         {/* Museum image */}
         <div className="w-1/2 flex items-center">
           {museum && (
             <Image
-              src={"https://drive.google.com/uc?export=view&id=" + museum.main_image || ""}
+              src={museum.main_image || ""}
               alt={museum.name}
               width={350}
               height={350}

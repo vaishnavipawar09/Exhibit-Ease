@@ -5,7 +5,11 @@ module.exports = {
     ...nextConfig,
     output: 'standalone',
     images: {
-        domains: ['drive.google.com'],
-        minimumCacheTTL: 1500000,
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "**",
+            },
+        ],
     },
 };
