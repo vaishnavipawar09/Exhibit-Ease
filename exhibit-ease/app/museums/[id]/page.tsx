@@ -23,7 +23,7 @@ export default async function Page({ params }: {
               alt={museum.name}
               width={350}
               height={350}
-              className="w-[350px] h-[350px] rounded-xl shadow-lg"
+              className="w-[350px] h-[350px] rounded-xl border-black border-[3px]"
             />
           )}
         </div>
