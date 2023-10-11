@@ -57,7 +57,7 @@ async function fetchMuseumData(query: Record<string, any>): Promise<Museum[]> {
 
 function MuseumCard({ museum }: { museum: Museum }) {
   return (
-    <div className="card card-compact rounded-md w-96 bg-base-100 shadow-lg">
+    <div className="card card-compact rounded-md w-auto bg-base-100 shadow-lg">
       <figure>
         <Image src={museum.main_image || ''} alt={museum.name} />
       </figure>
