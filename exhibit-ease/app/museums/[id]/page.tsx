@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import Image from "next/image";
+import Link from 'next/link';
 
 export default async function Page({ params }: {
   params: { id: string }
@@ -10,10 +11,12 @@ export default async function Page({ params }: {
     }
   })
 
+  const googleMapsLink: string = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(museum?.address || '') + '+' + encodeURIComponent(museum?.city || '') + '+' + encodeURIComponent(museum?.state || '')
+
   return <main className="h-screen">
     {/* Top section */}
     <div className="relative pt-20 pb-10 px-5 md:px-20 bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `linear-gradient(rgba(255, 255, 255, .4), rgba(255, 255, 255, .4)), url('${museum?.bg_image}')` }}>
+      style={{ backgroundImage: `linear-gradient(rgba(255, 255, 255, .6), rgba(255, 255, 255, .6)), url('${museum?.bg_image}')` }}>
       <div className="container mx-auto flex justify-between items-center h-full relative">
         {/* Museum image */}
         <div className="flex items-center">
@@ -29,9 +32,14 @@ export default async function Page({ params }: {
         </div>
 
         {/* Museum text */}
-        <div className="w-1/2 text-right pr-10 flex items-center">
+        <div className="w-1/2 text-center pr-10 flex items-center">
           <div>
-            <h1 className="text-4xl font-bold mb-4 text-center">{museum?.name}</h1>
+            <h1 className="text-6xl font-bold mb-4 text-center">{museum?.name}</h1>
+            <Link href={googleMapsLink}
+              rel="noopener noreferrer" target="_blank"
+              className="text-4xl font-semibold mb-4 text-center">
+              {museum?.address}, {museum?.city}, {museum?.state}
+            </Link>
           </div>
         </div>
       </div>
