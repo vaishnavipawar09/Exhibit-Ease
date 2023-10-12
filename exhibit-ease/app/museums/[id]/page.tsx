@@ -15,7 +15,7 @@ export default async function Page({ params }: {
   type MuseumKey = 'id' | 'name' | 'description' | 'main_image' | 'bg_image' | 'cost' | 'address' | 'city' | 'state' | 'zip' | 'type' | 'openHour' | 'closeHour';
 
   return <main className="h-screen">
-    <div className="hero h-1/2"
+    <div className="hero h-3/4"
       style={{ backgroundImage: `linear-gradient(rgba(255, 255, 255, .6), rgba(255, 255, 255, .6)), url('${museum?.bg_image}')` }}>
 
       <div className="hero-content flex-col lg:flex-row">
@@ -30,12 +30,14 @@ export default async function Page({ params }: {
         )}
         <div className='mx-auto text-center'>
           <h1 className="text-6xl font-bold mb-4 text-center">{museum?.name}</h1>
-          <Link href={googleMapsLink}
-            rel="noopener noreferrer" target="_blank"
-            className="text-4xl font-semibold mb-4 text-center">
-            {museum?.address}, {museum?.city}, {museum?.state}
-          </Link>
-          <button className="btn btn-primary mt-4">Book Tickets</button>
+          <div className="flex flex-col items-center">
+            <Link href={googleMapsLink}
+              rel="noopener noreferrer" target="_blank"
+              className="text-4xl font-semibold mb-4 text-center">
+              {museum?.address}, {museum?.city}, {museum?.state}
+            </Link>
+            <button className="btn btn-primary">Book Tickets</button>
+          </div>
         </div>
 
 
