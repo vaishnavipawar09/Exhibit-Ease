@@ -23,21 +23,11 @@ export default function Page() {
         </h4>
       </div>
 
-      <div className="w-full max-w-md">
-        <div className="flex bg-white p-4 rounded-full items-center shadow-xl">
-          <input
-            type="text"
-            placeholder="Search Museums..."
-            className="flex-grow rounded-full px-4 py-2 outline-none"
-          />
-          {/* <button className="ml-4">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-
-          </button> */}
-        </div>
-      </div>
+      <button>
+        <Link href={"/search/"} className="w-full">
+          <button className="btn btn-primary bg-[#661900]">Search Museums</button>
+        </Link>
+      </button>
 
     </div>
 
@@ -50,11 +40,7 @@ export default function Page() {
   </main>
 }
 
-interface Props {
-  query: string;
-}
-
-export const MuseumSection = ({ query }: Props) => {
+export const MuseumSection = ({ query }: { query: string }) => {
   const [museums, setMuseums] = useState<Museum[]>([]);
 
   useEffect(() => {
