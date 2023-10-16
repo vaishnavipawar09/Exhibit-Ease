@@ -44,5 +44,6 @@ export const options: NextAuthOptions = {
         brandColor: "", // Hex color code
         logo: "https://drive.google.com/uc?id=1KL5DqzxMZ6UgPCutbfS0W7oyEPRQoLEj", // Absolute URL to image
         buttonText: "" // Hex color code
-    }
+    },
+    useSecureCookies: false
 }

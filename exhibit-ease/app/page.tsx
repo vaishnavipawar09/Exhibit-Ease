@@ -23,11 +23,9 @@ export default function Page() {
         </h4>
       </div>
 
-      <button>
-        <Link href={"/search/"} className="w-full">
-          <button className="btn btn-primary bg-[#661900]">Search Museums</button>
-        </Link>
-      </button>
+      <Link href={"/search/"} className="w-full text-center">
+        <button className="btn btn-primary bg-[#661900]">Search Museums</button>
+      </Link>
 
     </div>
 
@@ -54,10 +52,10 @@ export const MuseumSection = ({ query }: { query: string }) => {
   }, [query]);
 
   return (
-    <div className='bg-gray-200 mb-5 shadow-inner rounded-sm'>
+    <div className='bg-gray-200 mb-5 h-5/6 shadow-inner rounded-sm'>
       <p className='pt-5 pl-2 text-3xl font-semibold'>New York</p>
       <div className='divider divider-vertical my-[8px] pl-2 pr-2 before:bg-gray-500 after:bg-gray-500'></div>
-      <div className="flex w-full p-2">
+      <div className="flex w-full h-5/6 p-2">
         {museums.map((museum, index) => (
           <div key={index} className="flex w-full p-2">
             <div className="card rounded-md w-full bg-base-100 shadow-lg flex flex-col justify-between">
@@ -66,7 +64,7 @@ export const MuseumSection = ({ query }: { query: string }) => {
                   src={museum.main_image || ''}
                   alt={museum.name}
                   width={300}
-                  height={200}
+                  height={100}
                   objectFit="cover"
                 />
               </figure>
