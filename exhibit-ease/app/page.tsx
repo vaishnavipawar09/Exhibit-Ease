@@ -6,10 +6,14 @@ import React from 'react';
 import { Museum } from '@prisma/client'
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import CityPopUp from './components/CityPopUp';
 
 export default function Page() {
 
   return <main className="h-screen">
+
+    <CityPopUp />
+
     {/* Top section */}
     <div className="flex flex-col justify-center items-center h-[70%] px-5 md:px-20 bg-cover bg-center bg-no-repeat shadow-[inset_0_-2px_4px_rgba(0,0,0,0.1)]"
       style={{ backgroundImage: `linear-gradient(rgba(255, 255, 255, .4), rgba(255, 255, 255, .4)), url(https://cdn.sanity.io/images/cctd4ker/production/909fa245367580e643fff7bedf1f5ca129443163-1200x630.jpg?w=600&q=75&auto=format)` }}>
