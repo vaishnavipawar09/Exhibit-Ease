@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import Image from "next/image";
 import Link from 'next/link';
 
+
 export default async function Page({ params }: {
   params: { id: string }
 }) {
@@ -10,6 +11,7 @@ export default async function Page({ params }: {
       id: parseInt(params.id)
     }
   })
+
 
   const googleMapsLink: string = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(museum?.address || '') + '+' + encodeURIComponent(museum?.city || '') + '+' + encodeURIComponent(museum?.state || '')
   type MuseumKey = 'id' | 'name' | 'description' | 'main_image' | 'bg_image' | 'cost' | 'address' | 'city' | 'state' | 'zip' | 'type' | 'openHour' | 'closeHour';
@@ -36,7 +38,7 @@ export default async function Page({ params }: {
               className="text-4xl font-semibold mb-4 text-center">
               {museum?.address}, {museum?.city}, {museum?.state}
             </Link>
-            <button className="btn btn-primary">Book Tickets</button>
+            <a href={`/booking?query=${museum?.name}`} className="btn btn-primary">Book Tickets</a>
           </div>
         </div>
 
