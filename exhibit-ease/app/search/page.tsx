@@ -32,13 +32,13 @@ export default function Page() {
             <div className="form-control">
               <label className="label cursor-pointer">
                 <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="label-text">ART</span>
+                <span className="ART">ART</span>
               </label>
             </div>
             <div className="form-control">
               <label className="label cursor-pointer">
                 <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="label-text">SCIENCE</span>
+                <span className="SCIENCE">SCIENCE</span>
               </label>
             </div>
             <div className="form-control">
