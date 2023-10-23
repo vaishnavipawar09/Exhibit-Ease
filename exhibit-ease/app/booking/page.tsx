@@ -1,3 +1,12 @@
-export default function Page() {
-    return <h1>Hello, you are now on the booking page.</h1>;
+'use client'
+
+import { useSearchParams } from 'next/navigation';
+
+export default function BookingPage() {
+    const searchParams = useSearchParams();
+    return (
+        <div>
+            Looking at museum no. {searchParams.get('id')}.
+        </div>
+    );
 }

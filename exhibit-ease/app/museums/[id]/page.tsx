@@ -14,8 +14,6 @@ export default async function Page({ params }: {
 
 
   const googleMapsLink: string = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(museum?.address || '') + '+' + encodeURIComponent(museum?.city || '') + '+' + encodeURIComponent(museum?.state || '')
-  type MuseumKey = 'id' | 'name' | 'description' | 'main_image' | 'bg_image' | 'cost' | 'address' | 'city' | 'state' | 'zip' | 'type' | 'openHour' | 'closeHour';
-
   return <main className="h-screen">
     <div className="hero h-3/4"
       style={{ backgroundImage: `linear-gradient(rgba(255, 255, 255, .6), rgba(255, 255, 255, .6)), url('${museum?.bg_image}')` }}>
@@ -38,7 +36,7 @@ export default async function Page({ params }: {
               className="text-4xl font-semibold mb-4 text-center">
               {museum?.address}, {museum?.city}, {museum?.state}
             </Link>
-            <a href={`/booking?query=${museum?.name}`} className="btn btn-primary">Book Tickets</a>
+            <a href={`/booking?id=${museum?.id}`} className="btn btn-primary">Book Tickets</a>
           </div>
         </div>
 
