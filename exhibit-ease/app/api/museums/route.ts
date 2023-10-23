@@ -6,20 +6,7 @@ import { parse } from 'url';
 
 export async function GET(req: NextApiRequest, res: NextApiResponse) {
     try {
-        var parsedUrl = parse(req.url || '', true);
-        var total = undefined;
-
-        if (parsedUrl.query.take != undefined) {
-            total = parseInt(parsedUrl.query.take as string);
-            delete parsedUrl.query.take;
-        }
-
-        const museums = await prisma.museum.findMany({
-            where: {
-                ...parsedUrl.query
-            },
-            take: total
-        });
+        const museums = await prisma.museum.findMany();
 
         return NextResponse.json(museums);
     } catch (error) {
