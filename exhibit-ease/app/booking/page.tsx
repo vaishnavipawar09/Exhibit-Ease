@@ -9,8 +9,11 @@ export default function BookingPage() {
 
     return (
         <div>
-            Looking at museum no. {searchParams?.get('id')}.
-            < BookingMuseumData museumID={parseInt(searchParams?.get('id') || '1')} />
+            <BookingMuseumData museumID={parseInt(searchParams?.get('id') || '1')} />
+            <p className="text-lg font-bold mb-4">Number of tickets (1-10) :</p>
+            <input className="rounded-xl border-black border-[3px] max-w-sm shadow-2xl" type="number" pattern="[0-9]*"
+                onInput={() => { }} value={1} />
         </div>
+
     );
 }
