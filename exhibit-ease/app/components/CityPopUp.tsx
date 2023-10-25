@@ -1,34 +1,131 @@
-export default function Page() {
-    return <div className="invisible w-1 h-1 p-0 m-[-1] absolute overflow-hidden">
-        {/* The button to open modal */}
-        <label htmlFor="my_modal_7" className="btn">open modal</label>
+import { BuildingLibraryIcon, BuildingOffice2Icon, BuildingOfficeIcon, HomeIcon, HomeModernIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { MapPinIcon } from "@heroicons/react/24/outline";
+import { useMuseums } from "../contexts/MuseumContext";
+import React, { useState, useEffect, FC } from "react";
 
-        {/* Put this part before </body> tag */}
-        <input type="checkbox" id="my_modal_7" className="modal-toggle" />
-        <div className="modal">
-            <div className="modal-box">
-                <div className="w-full px-10">
-                    <div className="flex bg-white p-4 rounded-full items-center">
-                        <input
-                            type="text"
-                            placeholder="Search Museums..."
-                            className="flex-grow rounded-full px-4 py-2 outline-none"
-                        />
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                        </svg>
+interface LoadCitiesProps {
+    onCityClick: () => void;
+}
+
+export default function Page() {
+    const [modalOpen, setModalOpen] = useState(true);
+    const [isInitialized, setIsInitialized] = useState(false);
+
+    const handleModalClose = () => {
+        setModalOpen(false);
+        // Restore body scrolling
+        document.body.style.overflowY = 'auto';
+    };
+
+    const handleCitySelection = () => {
+        localStorage.setItem('citySelected', 'true');
+        // Abstracted behavior when a city is selected
+        handleModalClose();
+    };
+
+    const handleDetectLocation = () => {
+        // Abstracted behavior when location detection is allowed
+        handleModalClose();
+    };
+
+    const handleSearchAndSelectCity = () => {
+        // Abstracted behavior when a city is searched and selected
+        handleModalClose();
+    };
+
+    useEffect(() => {
+        const citySelected = localStorage.getItem('citySelected');
+        setModalOpen(!citySelected);
+        setIsInitialized(true);
+
+        if (modalOpen) {
+            // Prevent body scrolling when modal is open
+            document.body.style.overflowY = 'hidden';
+        } else {
+            document.body.style.overflowY = 'auto';
+        }
+    }, [modalOpen]);
+
+    return <div className="invisible w-1 h-1 p-0 m-[-1] absolute overflow-hidden border-0 ">
+        <label htmlFor="my_modal_7" className="btn">open modal</label>
+        <input type="checkbox" id="my_modal_7" defaultChecked={true} className="modal-toggle" />
+        {
+            isInitialized && modalOpen && (
+                <div className="modal">
+
+                    <div className="modal-box max-w-4xl p-0">
+                        <div className="w-full">
+                            <div className="flex relative bg-white p-4 rounded-full items-center">
+                                <MagnifyingGlassIcon className="w-4 h-4 absolute left-4 ml-2" />
+                                <input
+                                    type="text"
+                                    placeholder="Search Cities..."
+                                    className="flex-grow rounded-none pl-8 py-2 outline-none border"
+                                />
+                            </div>
+
+                            <div className="flex bg-white p-4">
+                                <MapPinIcon className="w-6 h-6" />
+                                <p>Detect my location</p>
+                            </div>
+                            <LoadCities onCityClick={handleCitySelection} />
+                        </div>
                     </div>
-                    <div className="flex bg-white p-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                        </svg>
-                        <p>Detect my location</p>
-                    </div>
+                    <label className="modal-backdrop" htmlFor="my_modal_7">Close</label>
                 </div>
-                <p className="py-4">This modal works with a hidden checkbox!</p>
-            </div>
-            <label className="modal-backdrop" htmlFor="my_modal_7">Close</label>
-        </div>
+            )
+        }
+
     </div>
+}
+
+
+const LoadCities: FC<LoadCitiesProps> = ({ onCityClick }) => {
+    const { cities } = useMuseums();
+    const [showAll, setShowAll] = useState(false);
+
+    const iconCommonClasses = "w-8 h-8";
+
+    const cityIconArr = [
+        <BuildingLibraryIcon className={iconCommonClasses} />,
+        <BuildingOffice2Icon className={iconCommonClasses} />,
+        <BuildingOfficeIcon className={iconCommonClasses} />,
+        <HomeModernIcon className={iconCommonClasses} />,
+        <HomeIcon className={iconCommonClasses} />
+    ];
+
+    return (
+        <div className="p-4 bg-white">
+            <p className="mb-4 text-center">Popular Cities</p>
+            <div className="grid grid-cols-1 justify-center gap-4 mb-10 md:grid-cols-4">
+                {cities.slice(0, 4).map((city, index) => (
+                    <div key={index} className="flex flex-col items-center" onClick={onCityClick}>
+                        {React.cloneElement(cityIconArr[index % cityIconArr.length])}
+                        <p className="mt-2">{city}</p>
+                    </div>
+                ))}
+            </div>
+            {showAll ? (
+                <>
+                    <p className="mb-4 text-center">Other Cities</p>
+                    <div className="grid gap-0 mb-4 md:grid-cols-2 text-left">
+                        {cities.slice(4).map((city, index) => (
+                            <div key={index} className="flex flex-col">
+                                <p>{city}</p>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            ) : null}
+            <div className="text-center">
+                <button
+                    className="text-blue-500 hover:underline"
+                    onClick={() => setShowAll(!showAll)}
+                >
+                    {showAll ? 'Hide All Cities' : 'View All Cities'}
+                </button>
+            </div>
+        </div>
+    );
+
 }

@@ -7,7 +7,7 @@ import { MuseumSection } from './components/MuseumSection';
 
 export default function Page() {
 
-  return <main className="h-screen">
+  return <main className="h-screen max-w-screen-xl">
 
     <CityPopUp />
 
@@ -24,7 +24,7 @@ export default function Page() {
         </h4>
       </div>
 
-      <Link href={"/search/"} className="w-full text-center">
+      <Link href={"/search/"} className="text-center">
         <button className="btn btn-primary bg-[#661900]">Search Museums</button>
       </Link>
 
