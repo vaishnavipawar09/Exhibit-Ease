@@ -1,8 +1,9 @@
 import Image from "next/image";
 import React, { useEffect, useState } from 'react';
-import { Museum } from '@prisma/client'
+import { Museum, MuseumType } from '@prisma/client'
 import Link from 'next/link';
 import getMuseums from './Museums';
+import { useMuseums } from "../contexts/MuseumContext";
 
 interface MuseumSectionProps {
     title: string
@@ -10,30 +11,9 @@ interface MuseumSectionProps {
 }
 
 export const MuseumSection = ({ query }: { query: MuseumSectionProps }) => {
-    const [museums, setMuseums] = useState<Museum[]>([]);
-    useEffect(() => {
-        async function fetchMuseums() {
-            try {
-                const res = await fetch('/api/museums');
-                var data = await res.json();
-                // TODO: change later
-                // data = data.filter((museum: Museum) => museum.type === query.type && museum.main_image !== null);
-                if (data.filter((museum: Museum) => museum.type === query.type && museum.main_image !== null).length == 3) {
-                    data = data.filter((museum: Museum) => museum.type === query.type && museum.main_image !== null)
+    const { getMuseumsByField } = useMuseums();
 
-                } else {
-                    data = data.filter((museum: Museum) => museum.type === query.type);
-                }
-
-                data = data.slice(0, 3);
-                setMuseums(data);
-            } catch (error) {
-                console.error("Error fetching museums:", error);
-            }
-        }
-
-        fetchMuseums();
-    }, [query]);
+    var museums = getMuseumsByField('type', query.type as MuseumType).slice(0, 3);
 
     return (
         <div className='bg-gray-200 mb-5 shadow-inner rounded-sm'>
@@ -44,7 +24,6 @@ export const MuseumSection = ({ query }: { query: MuseumSectionProps }) => {
                     <MuseumCard index={index} museum={museum} />
                 ))}
             </div>
-
         </div>
     );
 };
