@@ -27,13 +27,13 @@ export default async function RootLayout({
           <Header />
           <div className="flex">
             <div className="w-40 bg-red">
-              01
+
             </div>
             <div className="flex-grow">
               {children}
             </div>
             <div className="w-40 bg-red">
-              03
+
             </div>
           </div>
 
