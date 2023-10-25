@@ -1,13 +1,27 @@
 import Image from "next/image";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Museum } from '@prisma/client'
 import Link from 'next/link';
 import getMuseums from './Museums';
 
 
-export const MuseumSection = async ({ query }: { query: string }) => {
-    const museumsArr: Museum[] = await getMuseums();
-    const museums = museumsArr.slice(0, 3);
+export const MuseumSection = ({ query }: { query: string }) => {
+    const [museums, setMuseums] = useState<Museum[]>([]);
+    useEffect(() => {
+        async function fetchMuseums() {
+            try {
+                const res = await fetch('/api/museums'); // Using relative URL
+                const data = await res.json();
+                setMuseums(data.slice(0, 3));
+            } catch (error) {
+                console.error("Error fetching museums:", error);
+                // Handle the error, e.g. show a notification or message to the user
+            }
+        }
+
+        fetchMuseums();
+    }, [query]);
+
     return (
         <div className='bg-gray-200 mb-5 h-5/6 shadow-inner rounded-sm'>
             <p className='pt-5 pl-2 text-3xl font-semibold'>New York</p>
