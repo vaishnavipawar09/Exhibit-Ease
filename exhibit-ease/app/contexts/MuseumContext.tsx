@@ -5,8 +5,8 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 
 interface MuseumContextProps {
     museums: Museum[];
-    cities: Set<string>;
-    states: Set<string>;
+    cities: string[];
+    states: string[];
     fetchMuseums: () => void; // if you want to trigger data fetch from a component
     getMuseumsByField: <T extends keyof Museum>(field: T, value: Museum[T]) => Museum[];
 }
@@ -27,8 +27,8 @@ export const useMuseums = () => {
 
 export const MuseumProvider: React.FC<MuseumProviderProps> = ({ children }) => {
     const [museums, setMuseums] = useState<Museum[]>([]);
-    const [cities, setCities] = useState<Set<string>>(new Set());
-    const [states, setStates] = useState<Set<string>>(new Set());
+    const [cities, setCities] = useState<string[]>([]);
+    const [states, setStates] = useState<string[]>([]);
 
     const sortedMuseums = useMemo(() => {
         let clonedMuseums = [...museums];
@@ -40,8 +40,9 @@ export const MuseumProvider: React.FC<MuseumProviderProps> = ({ children }) => {
             const res = await fetch('/api/museums');
             const data = await res.json();
             setMuseums(data);
-            setCities(new Set(data.map((museum: Museum) => museum.city)));
-            setStates(new Set(data.map((museum: Museum) => museum.state)));
+            setCities(Array.from(new Set(data.map((museum: Museum) => museum.city))));
+            setStates(Array.from(new Set(data.map((museum: Museum) => museum.state))));
+
         } catch (error) {
             console.error("Error fetching museums:", error);
         }

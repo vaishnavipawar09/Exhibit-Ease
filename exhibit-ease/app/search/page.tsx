@@ -60,7 +60,7 @@ export default function Page() {
             City
           </div>
           <div className="collapse-content">
-            <CreateCheckboxes setOfStrings={Array.from(cities)} />
+            <CreateCheckboxes setOfStrings={cities} />
           </div>
         </div>
         {/* Museum State Filter */}
@@ -70,7 +70,7 @@ export default function Page() {
             State
           </div>
           <div className="collapse-content">
-            <CreateCheckboxes setOfStrings={Array.from(states)} />
+            <CreateCheckboxes setOfStrings={states} />
           </div>
         </div>
         {/* Museum Price Filter */}

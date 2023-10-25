@@ -1,5 +1,6 @@
 import { BuildingLibraryIcon, BuildingOffice2Icon, BuildingOfficeIcon, HomeIcon, HomeModernIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MapPinIcon } from "@heroicons/react/24/outline";
+import { useMuseums } from "../contexts/MuseumContext";
 
 export default function Page() {
     return <div className="invisible w-1 h-1 p-0 m-[-1] absolute overflow-hidden border-0 ">
@@ -33,6 +34,9 @@ export default function Page() {
 }
 
 function LoadCities() {
+
+    const { cities } = useMuseums();
+
     const cityIconArr = [
         <BuildingLibraryIcon />,
         <BuildingOffice2Icon />,
@@ -41,5 +45,15 @@ function LoadCities() {
         <HomeIcon />
     ];
 
-    return <></>
+    return <>
+        <div className="flex flex-col">
+            {cities.map((city, index) => (
+                <div key={index} className="flex bg-white p-4">
+                    {cityIconArr[index % cityIconArr.length]}
+                    <p>{city}</p>
+                </div>
+            ))}
+        </div>
+
+    </>
 }
