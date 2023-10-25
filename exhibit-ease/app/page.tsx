@@ -24,7 +24,7 @@ export default function Page() {
         </h4>
       </div>
 
-      <Link href={"/search/"} className="w-full text-center">
+      <Link href={"/search/"} className="text-center">
         <button className="btn btn-primary bg-[#661900]">Search Museums</button>
       </Link>
 

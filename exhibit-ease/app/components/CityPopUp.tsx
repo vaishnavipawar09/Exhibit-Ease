@@ -1,59 +1,131 @@
 import { BuildingLibraryIcon, BuildingOffice2Icon, BuildingOfficeIcon, HomeIcon, HomeModernIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MapPinIcon } from "@heroicons/react/24/outline";
 import { useMuseums } from "../contexts/MuseumContext";
+import React, { useState, useEffect, FC } from "react";
+
+interface LoadCitiesProps {
+    onCityClick: () => void;
+}
 
 export default function Page() {
+    const [modalOpen, setModalOpen] = useState(true);
+    const [isInitialized, setIsInitialized] = useState(false);
+
+    const handleModalClose = () => {
+        setModalOpen(false);
+        // Restore body scrolling
+        document.body.style.overflowY = 'auto';
+    };
+
+    const handleCitySelection = () => {
+        localStorage.setItem('citySelected', 'true');
+        // Abstracted behavior when a city is selected
+        handleModalClose();
+    };
+
+    const handleDetectLocation = () => {
+        // Abstracted behavior when location detection is allowed
+        handleModalClose();
+    };
+
+    const handleSearchAndSelectCity = () => {
+        // Abstracted behavior when a city is searched and selected
+        handleModalClose();
+    };
+
+    useEffect(() => {
+        const citySelected = localStorage.getItem('citySelected');
+        setModalOpen(!citySelected);
+        setIsInitialized(true);
+
+        if (modalOpen) {
+            // Prevent body scrolling when modal is open
+            document.body.style.overflowY = 'hidden';
+        } else {
+            document.body.style.overflowY = 'auto';
+        }
+    }, [modalOpen]);
+
     return <div className="invisible w-1 h-1 p-0 m-[-1] absolute overflow-hidden border-0 ">
-        {/* The button to open modal */}
         <label htmlFor="my_modal_7" className="btn">open modal</label>
+        <input type="checkbox" id="my_modal_7" defaultChecked={true} className="modal-toggle" />
+        {
+            isInitialized && modalOpen && (
+                <div className="modal">
 
-        {/* Put this part before </body> tag */}
-        <input type="checkbox" id="my_modal_7" checked={true} className="modal-toggle" />
-        <div className="modal">
-            <div className="modal-box p-0">
-                <div className="w-full">
-                    <div className="flex relative bg-white p-4 rounded-full items-center">
-                        <MagnifyingGlassIcon className="w-4 h-4 absolute left-4 ml-2" />
-                        <input
-                            type="text"
-                            placeholder="Search Cities..."
-                            className="flex-grow rounded-none pl-8 py-2 outline-none border"
-                        />
-                    </div>
+                    <div className="modal-box max-w-4xl p-0">
+                        <div className="w-full">
+                            <div className="flex relative bg-white p-4 rounded-full items-center">
+                                <MagnifyingGlassIcon className="w-4 h-4 absolute left-4 ml-2" />
+                                <input
+                                    type="text"
+                                    placeholder="Search Cities..."
+                                    className="flex-grow rounded-none pl-8 py-2 outline-none border"
+                                />
+                            </div>
 
-                    <div className="flex bg-white p-4">
-                        <MapPinIcon className="w-6 h-6" />
-                        <p>Detect my location</p>
+                            <div className="flex bg-white p-4">
+                                <MapPinIcon className="w-6 h-6" />
+                                <p>Detect my location</p>
+                            </div>
+                            <LoadCities onCityClick={handleCitySelection} />
+                        </div>
                     </div>
-                    <LoadCities />
+                    <label className="modal-backdrop" htmlFor="my_modal_7">Close</label>
                 </div>
-            </div>
-            <label className="modal-backdrop" htmlFor="my_modal_7">Close</label>
-        </div>
+            )
+        }
+
     </div>
 }
 
-function LoadCities() {
 
+const LoadCities: FC<LoadCitiesProps> = ({ onCityClick }) => {
     const { cities } = useMuseums();
+    const [showAll, setShowAll] = useState(false);
+
+    const iconCommonClasses = "w-8 h-8";
 
     const cityIconArr = [
-        <BuildingLibraryIcon />,
-        <BuildingOffice2Icon />,
-        <BuildingOfficeIcon />,
-        <HomeModernIcon />,
-        <HomeIcon />
+        <BuildingLibraryIcon className={iconCommonClasses} />,
+        <BuildingOffice2Icon className={iconCommonClasses} />,
+        <BuildingOfficeIcon className={iconCommonClasses} />,
+        <HomeModernIcon className={iconCommonClasses} />,
+        <HomeIcon className={iconCommonClasses} />
     ];
 
-    return <>
-        <div className="flex flex-col">
-            {cities.map((city, index) => (
-                <div key={index} className="flex bg-white p-4">
-                    {cityIconArr[index % cityIconArr.length]}
-                    <p>{city}</p>
-                </div>
-            ))}
+    return (
+        <div className="p-4 bg-white">
+            <p className="mb-4 text-center">Popular Cities</p>
+            <div className="grid grid-cols-1 justify-center gap-4 mb-10 md:grid-cols-4">
+                {cities.slice(0, 4).map((city, index) => (
+                    <div key={index} className="flex flex-col items-center" onClick={onCityClick}>
+                        {React.cloneElement(cityIconArr[index % cityIconArr.length])}
+                        <p className="mt-2">{city}</p>
+                    </div>
+                ))}
+            </div>
+            {showAll ? (
+                <>
+                    <p className="mb-4 text-center">Other Cities</p>
+                    <div className="grid gap-0 mb-4 md:grid-cols-2 text-left">
+                        {cities.slice(4).map((city, index) => (
+                            <div key={index} className="flex flex-col">
+                                <p>{city}</p>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            ) : null}
+            <div className="text-center">
+                <button
+                    className="text-blue-500 hover:underline"
+                    onClick={() => setShowAll(!showAll)}
+                >
+                    {showAll ? 'Hide All Cities' : 'View All Cities'}
+                </button>
+            </div>
         </div>
+    );
 
-    </>
 }
