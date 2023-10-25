@@ -26,7 +26,6 @@ export const MuseumSection = ({ query }: { query: MuseumSectionProps }) => {
                 }
 
                 data = data.slice(0, 3);
-                console.log(data)
                 setMuseums(data);
             } catch (error) {
                 console.error("Error fetching museums:", error);
@@ -42,39 +41,44 @@ export const MuseumSection = ({ query }: { query: MuseumSectionProps }) => {
             <div className='divider divider-vertical my-[8px] pl-2 pr-2 before:bg-gray-500 after:bg-gray-500'></div>
             <div className="flex w-full h-5/6 p-2">
                 {museums.map((museum, index) => (
-                    <div key={index} className="flex w-full p-2">
-                        <div className="card rounded-md w-full bg-base-100 shadow-lg flex flex-col justify-between">
-                            <figure className='h-1/2'>
-                                <Image
-                                    src={museum.main_image || ''}
-                                    alt={museum.name}
-                                    width={300}
-                                    height={100}
-                                    className="object-cover"
-                                />
-                            </figure>
-                            <div className="card-body flex flex-col justify-between">
-                                <div>
-                                    {/* Set a fixed height for the card title */}
-                                    <h2 className="card-title line-clamp h-[3rem] mb-[1rem]">{museum.name}</h2>
-                                    {/* Set a fixed height for the address */}
-                                    <Link href={"https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(museum?.address || '') + '+' + encodeURIComponent(museum?.city || '') + '+' + encodeURIComponent(museum?.state || '')}
-                                        rel="noopener noreferrer" target="_blank"
-                                        className='mb-[.5rem] h-[2rem] block'>
-                                        {museum?.city}, {museum?.state}
-                                    </Link>
-                                </div>
-                                <div className="card-actions justify-evenly">
-                                    <Link href={"/museums/" + museum.id} className="w-full">
-                                        <button className="btn btn-primary w-full bg-[#661900]">View Museum</button>
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <MuseumCard index={index} museum={museum} />
                 ))}
             </div>
 
         </div>
     );
 };
+
+export function MuseumCard({ museum, index }: { museum: Museum, index: number }) {
+    return <>
+        <div key={index} className="flex w-full p-2">
+            <div className="card rounded-md w-full bg-base-100 shadow-lg flex flex-col justify-between">
+                <figure className='h-1/2'>
+                    <Image
+                        src={museum.main_image || ''}
+                        alt={museum.name}
+                        width={300}
+                        height={100}
+                        className="object-cover"
+                    />
+                </figure>
+                <div className="card-body flex flex-col justify-between">
+                    <div>
+                        {/* Set a fixed height for the card title */}
+                        <h2 className="card-title line-clamp h-[3rem] mb-[1rem]">{museum.name}</h2>
+                        {/* Set a fixed height for the address */}
+                        <Link href={"https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(museum?.address || '') + '+' + encodeURIComponent(museum?.city || '') + '+' + encodeURIComponent(museum?.state || '')}
+                            rel="noopener noreferrer" target="_blank"
+                            className='mb-[.5rem] h-[2rem] block'>
+                            {museum?.city}, {museum?.state}
+                        </Link>
+                    </div>
+                    <div className="card-actions justify-evenly">
+                        <Link href={"/museums/" + museum.id} className="w-full">
+                            <button className="btn btn-primary w-full bg-[#661900]">View Museum</button>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </div></>
+}

@@ -1,5 +1,5 @@
 export default function Page() {
-    return <div className="invisible w-1 h-1 p-0 m-[-1] absolute overflow-hidden">
+    return <div className="invisible w-1 h-1 p-0 m-[-1] absolute overflow-hidden border-0 ">
         {/* The button to open modal */}
         <label htmlFor="my_modal_7" className="btn">open modal</label>
 

@@ -1,10 +1,32 @@
-import { prisma } from '@/lib/prisma';
+'use client';
+
+import { Museum } from '@prisma/client';
 import Image from "next/image";
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { MuseumCard } from '../components/MuseumSection';
 
 export default function Page() {
+  const [museums, setMuseums] = useState<Museum[]>([]);
+  const [cities, setCities] = useState<Set<string>>(new Set());
+  const [states, setStates] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    async function fetchMuseums() {
+      try {
+        const res = await fetch('/api/museums');
+        var data = await res.json();
+        setMuseums(data);
+        setCities(new Set(data.map((museum: Museum) => museum.city)));
+        setStates(new Set(data.map((museum: Museum) => museum.state)));
 
+      } catch (error) {
+        console.error("Error fetching museums:", error);
+      }
+    }
+
+    fetchMuseums();
+  }, []);
+  console.log(cities);
   return <>
     {/*Search bar */}
     <div className="w-full px-10 mb-10">
@@ -56,66 +78,7 @@ export default function Page() {
             City
           </div>
           <div className="collapse-content">
-          <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="Select All">Select All</span>
-              </label>
-            </div>
-          <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="Washington">Washington</span>
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="San Marino">San Marino</span>
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="Chicago">Chicago</span>
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="Los Angeles">Los Angeles</span>
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="San Francisco">San Francisco</span>
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="Houston">Houston</span>
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="Denver">Denver</span>
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="Boston">Boston</span>
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="Minneapolis">Minneapolis</span>
-              </label>
-            </div>
+            <CreateCheckboxes setOfStrings={Array.from(cities)} />
           </div>
         </div>
         {/* Museum State Filter */}
@@ -125,60 +88,7 @@ export default function Page() {
             State
           </div>
           <div className="collapse-content">
-          <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="Select All">Select All</span>
-              </label>
-            </div>
-          <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="DC">DC</span>
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="NY">NY</span>
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="CA">CA</span>
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="TX">TX</span>
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="CO">CO</span>
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="IL">IL</span>
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="MA">MA</span>
-              </label>
-            </div>
-            <div className="form-control">
-              <label className="label cursor-pointer">
-                <input type="checkbox" defaultChecked={false} className="checkbox" />
-                <span className="MN">MN</span>
-              </label>
-            </div>
+            <CreateCheckboxes setOfStrings={Array.from(states)} />
           </div>
         </div>
         {/* Museum Price Filter */}
@@ -188,67 +98,32 @@ export default function Page() {
             Price
           </div>
           <div className="collapse-content">
-          <input type="range" min={0} max="100" value="40" className="range range-xs" /> 
+            <input type="range" min={0} max="100" value="40" className="range range-xs" />
           </div>
         </div>
       </div>
       <div className="divider lg:divider-horizontal"></div>
-      <div className="grid flex-grow h-full card bg-base-300 rounded-box place-items-center lg:w-4/5">
-        <p>HI</p>
-
+      <div className="flex-grow h-full card bg-base-300 rounded-box place-items-center lg:w-4/5">
+        <div className="grid grid-cols-3 gap-4">
+          {museums && museums.map(
+            (museum, index) => (
+              <MuseumCard index={index} museum={museum} />
+            )
+          )}
+        </div>
       </div>
     </div>
 
   </>
 }
 
-
-// {/* Type Filter */}
-// <select className="rounded-full px-2 py-2 mx-2">
-// <option value="">All Types</option>
-// <option value="art">ART</option>
-// <option value="history">HISTORY</option>
-// <option value="science">SCIENCE</option>
-// {/* Add more options for different types */}
-// </select>
-
-// {/* State Filter */}
-// <select className="rounded-full px-2 py-2 mx-2">
-// <option value="">All States</option>
-// <option value="DC">DC</option>
-// <option value="NY">NY</option>
-// <option value="CA">CA</option>
-// <option value="TX">TX</option>
-// <option value="CO">CO</option>
-// <option value="IL">IL</option>
-// <option value="MA">MA</option>
-// <option value="MN">MN</option>
-// {/* Add more options for different states */}
-// </select>
-
-// {/* City Filter */}
-// <select className="rounded-full px-2 py-2 mx-2">
-// <option value="">All Cities</option>
-// <option value="Washington">Washington</option>
-// <option value="San Marino">San Marino</option>
-// <option value="Chicago">Chicago</option>
-// <option value="Los Angeles">Los Angeles</option>
-// <option value="San Francisco">San Francisco</option>
-// <option value="Houston">Houston</option>
-// <option value="Denver">Denver</option>
-// <option value="Boston">Boston</option>
-// <option value="Minneapolis">Minneapolis</option>
-// {/* Add more options for different cities */}
-// </select>
-
-// {/* Cost Filter */}
-// <select className="rounded-full px-2 py-2 mx-2">
-// <option value="">All Costs</option>
-// <option value="1">$10 - $15</option>
-// <option value="2">$16 - $20</option>
-// <option value="3">$21 - $25</option>
-// <option value="4">$21 - $25</option>
-// <option value="5">$26 - $30</option>
-// <option value="5">$31 - $35</option>
-// <option value="7">$36 - $40</option>
-// </select>
+function CreateCheckboxes({ setOfStrings }: { setOfStrings: Array<string> }) {
+  return <>{setOfStrings.map((str: string, index: number) => (
+    <div key={index} className="form-control">
+      <label className="label cursor-pointer">
+        <input type="checkbox" defaultChecked={false} className="checkbox" />
+        <span className={str}>{str}</span>
+      </label>
+    </div>
+  ))}</>
+}
