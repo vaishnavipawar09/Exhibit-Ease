@@ -36,7 +36,7 @@ export const MuseumSection = ({ query }: { query: MuseumSectionProps }) => {
     }, [query]);
 
     return (
-        <div className='bg-gray-200 mb-5 h-5/6 shadow-inner rounded-sm'>
+        <div className='bg-gray-200 mb-5 shadow-inner rounded-sm'>
             <p className='pt-5 pl-2 text-3xl font-semibold'>{query.title}</p>
             <div className='divider divider-vertical my-[8px] pl-2 pr-2 before:bg-gray-500 after:bg-gray-500'></div>
             <div className="flex w-full h-5/6 p-2">
@@ -51,7 +51,7 @@ export const MuseumSection = ({ query }: { query: MuseumSectionProps }) => {
 
 export function MuseumCard({ museum, index }: { museum: Museum, index: number }) {
     return <>
-        <div key={index} className="flex w-full p-2">
+        <div key={index} className="flex w-full p-2 max-w-full">
             <div className="card rounded-md w-full bg-base-100 shadow-lg flex flex-col justify-between">
                 <figure className='h-1/2'>
                     <Image

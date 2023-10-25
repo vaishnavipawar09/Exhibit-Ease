@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import Header from './components/Header'
 import { getServerSession } from 'next-auth';
 import SessionProvider from './components/SessionProvider';
+import { MuseumProvider } from './contexts/MuseumContext';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,26 +23,28 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        {/* Make sure to include any necessary meta tags, scripts, and styles here */}
+      </head>
       <body className={inter.className}>
         <SessionProvider session={session}>
-          <Header />
-          <div className="flex">
-            <div className="w-40 bg-red">
-
+          <MuseumProvider> {/* <-- Add the MuseumProvider here */}
+            <Header />
+            <div className="grid grid-cols-10 min-h-screen gap-0">
+              <div className="col-span-1 bg-red">
+                {/* Left content here */}
+              </div>
+              <div className="col-span-8">
+                {children}
+              </div>
+              <div className="col-span-1 bg-red">
+                {/* Right content here */}
+              </div>
             </div>
-            <div className="flex-grow">
-              {children}
-            </div>
-            <div className="w-40 bg-red">
-
-            </div>
-          </div>
-
-
-
-
+          </MuseumProvider> {/* <-- Close the MuseumProvider here */}
         </SessionProvider>
       </body>
     </html>
-  )
+  );
+
 }

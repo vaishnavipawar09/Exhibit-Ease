@@ -5,28 +5,10 @@ import Image from "next/image";
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { MuseumCard } from '../components/MuseumSection';
+import { useMuseums } from '../contexts/MuseumContext';
 
 export default function Page() {
-  const [museums, setMuseums] = useState<Museum[]>([]);
-  const [cities, setCities] = useState<Set<string>>(new Set());
-  const [states, setStates] = useState<Set<string>>(new Set());
-  useEffect(() => {
-    async function fetchMuseums() {
-      try {
-        const res = await fetch('/api/museums');
-        var data = await res.json();
-        setMuseums(data);
-        setCities(new Set(data.map((museum: Museum) => museum.city)));
-        setStates(new Set(data.map((museum: Museum) => museum.state)));
-
-      } catch (error) {
-        console.error("Error fetching museums:", error);
-      }
-    }
-
-    fetchMuseums();
-  }, []);
-  console.log(cities);
+  const { museums, cities, states } = useMuseums();
   return <>
     {/*Search bar */}
     <div className="w-full px-10 mb-10">

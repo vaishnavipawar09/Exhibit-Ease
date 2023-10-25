@@ -7,7 +7,7 @@ import { MuseumSection } from './components/MuseumSection';
 
 export default function Page() {
 
-  return <main className="h-screen">
+  return <main className="h-screen max-w-screen-xl">
 
     <CityPopUp />
 
