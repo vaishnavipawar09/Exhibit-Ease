@@ -56,7 +56,66 @@ export default function Page() {
             City
           </div>
           <div className="collapse-content">
-            <p>hello</p>
+          <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="Select All">Select All</span>
+              </label>
+            </div>
+          <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="Washington">Washington</span>
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="San Marino">San Marino</span>
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="Chicago">Chicago</span>
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="Los Angeles">Los Angeles</span>
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="San Francisco">San Francisco</span>
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="Houston">Houston</span>
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="Denver">Denver</span>
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="Boston">Boston</span>
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="Minneapolis">Minneapolis</span>
+              </label>
+            </div>
           </div>
         </div>
         {/* Museum State Filter */}
@@ -66,7 +125,60 @@ export default function Page() {
             State
           </div>
           <div className="collapse-content">
-            <p>hello</p>
+          <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="Select All">Select All</span>
+              </label>
+            </div>
+          <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="DC">DC</span>
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="NY">NY</span>
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="CA">CA</span>
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="TX">TX</span>
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="CO">CO</span>
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="IL">IL</span>
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="MA">MA</span>
+              </label>
+            </div>
+            <div className="form-control">
+              <label className="label cursor-pointer">
+                <input type="checkbox" defaultChecked={false} className="checkbox" />
+                <span className="MN">MN</span>
+              </label>
+            </div>
           </div>
         </div>
         {/* Museum Price Filter */}
@@ -76,7 +188,7 @@ export default function Page() {
             Price
           </div>
           <div className="collapse-content">
-            <p>hello</p>
+          <input type="range" min={0} max="100" value="40" className="range range-xs" /> 
           </div>
         </div>
       </div>
