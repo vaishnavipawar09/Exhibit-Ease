@@ -32,9 +32,9 @@ export default function Page() {
 
     <hr className="h-px my-8 border-0 bg-white" />
 
-    <MuseumSection query="type=ART&take=3" />
-    {/* <MuseumSection query="type=HISTORY&take=3" />
-    <MuseumSection query="type=SCIENCE&take=3" /> */}
+    <MuseumSection query={{ type: 'ART' }} />
+    <MuseumSection query={{ type: 'SCIENCE' }} />
+    <MuseumSection query={{ type: 'HISTORY' }} />
 
   </main>
 }

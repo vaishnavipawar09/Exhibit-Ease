@@ -4,18 +4,31 @@ import { Museum } from '@prisma/client'
 import Link from 'next/link';
 import getMuseums from './Museums';
 
+interface MuseumSectionProps {
+    type: string
+}
 
-export const MuseumSection = ({ query }: { query: string }) => {
+export const MuseumSection = ({ query }: { query: MuseumSectionProps }) => {
     const [museums, setMuseums] = useState<Museum[]>([]);
     useEffect(() => {
         async function fetchMuseums() {
             try {
-                const res = await fetch('/api/museums'); // Using relative URL
-                const data = await res.json();
-                setMuseums(data.slice(0, 3));
+                const res = await fetch('/api/museums');
+                var data = await res.json();
+                // TODO: change later
+                // data = data.filter((museum: Museum) => museum.type === query.type && museum.main_image !== null);
+                if (data.filter((museum: Museum) => museum.type === query.type && museum.main_image !== null).length == 3) {
+                    data = data.filter((museum: Museum) => museum.type === query.type && museum.main_image !== null)
+
+                } else {
+                    data = data.filter((museum: Museum) => museum.type === query.type);
+                }
+
+                data = data.slice(0, 3);
+                console.log(data)
+                setMuseums(data);
             } catch (error) {
                 console.error("Error fetching museums:", error);
-                // Handle the error, e.g. show a notification or message to the user
             }
         }
 
