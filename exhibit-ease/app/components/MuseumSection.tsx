@@ -21,7 +21,7 @@ export const MuseumSection = ({ query }: { query: MuseumSectionProps }) => {
             <div className='divider divider-vertical my-[8px] pl-2 pr-2 before:bg-gray-500 after:bg-gray-500'></div>
             <div className="flex w-full h-5/6 p-2">
                 {museums.map((museum, index) => (
-                    <MuseumCard index={index} museum={museum} />
+                    <MuseumCard key={index} index={index} museum={museum} />
                 ))}
             </div>
         </div>
@@ -30,7 +30,7 @@ export const MuseumSection = ({ query }: { query: MuseumSectionProps }) => {
 
 export function MuseumCard({ museum, index }: { museum: Museum, index: number }) {
     return (
-        <div key={index} className="flex w-full p-2 max-w-full min-h-[15rem]">
+        <div className="flex w-full p-2 max-w-full min-h-[15rem]">
             <div className="card rounded-sm w-full relative bg-base-100 shadow-lg overflow-hidden h-full flex flex-col">
                 <div className="relative flex-grow" style={{ backgroundImage: `url(${museum.main_image || ''})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
                     <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-30"></div>
