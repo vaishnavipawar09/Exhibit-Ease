@@ -156,7 +156,7 @@ export default function BookingPage() {
                 </div>
             </div>
 
-            <a href={''} className="btn btn-primary">Complete Ticket Payment</a>
+            <a href={`/confirmation?id=${museums?.id}`} className="btn btn-primary">Complete Ticket Payment</a>
 
         </div>
 

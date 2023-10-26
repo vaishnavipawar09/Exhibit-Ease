@@ -16,12 +16,12 @@ export const MuseumSection = ({ query }: { query: MuseumSectionProps }) => {
     var museums = getMuseumsByField('type', query.type as MuseumType).slice(0, 3);
 
     return (
-        <div className='bg-gray-200 mb-5 shadow-inner rounded-sm'>
+        <div className=' mb-5 rounded-sm'>
             <p className='pt-5 pl-2 text-3xl font-semibold'>{query.title}</p>
             <div className='divider divider-vertical my-[8px] pl-2 pr-2 before:bg-gray-500 after:bg-gray-500'></div>
             <div className="flex w-full h-5/6 p-2">
                 {museums.map((museum, index) => (
-                    <MuseumCard index={index} museum={museum} />
+                    <MuseumCard key={index} index={index} museum={museum} />
                 ))}
             </div>
         </div>
@@ -29,35 +29,32 @@ export const MuseumSection = ({ query }: { query: MuseumSectionProps }) => {
 };
 
 export function MuseumCard({ museum, index }: { museum: Museum, index: number }) {
-    return <>
-        <div key={index} className="flex w-full p-2 max-w-full">
-            <div className="card rounded-md w-full bg-base-100 shadow-lg flex flex-col justify-between">
-                <figure className='h-1/2'>
-                    <Image
-                        src={museum.main_image || ''}
-                        alt={museum.name}
-                        width={300}
-                        height={100}
-                        className="object-cover"
-                    />
-                </figure>
-                <div className="card-body flex flex-col justify-between">
+    return (
+        <div className="flex w-full p-2 max-w-full min-h-[15rem]">
+            <div className="card rounded-sm w-full relative bg-base-100 shadow-lg overflow-hidden h-full flex flex-col">
+                <div className="relative flex-grow" style={{ backgroundImage: `url(${museum.main_image || ''})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                    <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-30"></div>
+                </div>
+
+                {/* Card Content */}
+                <div className="absolute top-0 left-0 w-full h-full p-4 flex flex-col justify-between">
                     <div>
-                        {/* Set a fixed height for the card title */}
-                        <h2 className="card-title line-clamp h-[3rem] mb-[1rem]">{museum.name}</h2>
-                        {/* Set a fixed height for the address */}
-                        <Link href={"https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(museum?.address || '') + '+' + encodeURIComponent(museum?.city || '') + '+' + encodeURIComponent(museum?.state || '')}
-                            rel="noopener noreferrer" target="_blank"
-                            className='mb-[.5rem] h-[2rem] block'>
+                        <h2 className="card-title line-clamp mb-[1rem] text-white">{museum.name}</h2>
+                        <Link
+                            href={"https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(museum?.address || '') + '+' + encodeURIComponent(museum?.city || '') + '+' + encodeURIComponent(museum?.state || '')}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            className='mb-[.5rem] block text-white'>
                             {museum?.city}, {museum?.state}
                         </Link>
                     </div>
-                    <div className="card-actions justify-evenly">
+                    <div className="card-actions justify-evenly mt-auto">
                         <Link href={"/museums/" + museum.id} className="w-full">
-                            <button className="btn btn-primary w-full bg-[#661900]">View Museum</button>
+                            <button className="btn btn-primary w-full bg-[#661900] mt-2">View Museum</button>
                         </Link>
                     </div>
                 </div>
             </div>
-        </div></>
+        </div>
+    );
 }

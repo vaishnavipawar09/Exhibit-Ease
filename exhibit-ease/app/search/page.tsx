@@ -95,11 +95,11 @@ export default function Page() {
         </div>
       </div>
       <div className="divider lg:divider-horizontal"></div>
-      <div className="flex-grow h-full card bg-base-300 rounded-box place-items-center lg:w-4/5">
-        <div className="grid grid-cols-3 gap-4">
+      <div className="flex-grow h-full card rounded-box place-items-center lg:w-4/5">
+        <div className="grid grid-cols-3 gap-4 w-full">
           {museums && museums.map(
             (museum, index) => (
-              <MuseumCard index={index} museum={museum} />
+              <MuseumCard key={index} index={index} museum={museum} />
             )
           )}
         </div>
