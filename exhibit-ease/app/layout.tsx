@@ -28,9 +28,9 @@ export default async function RootLayout({
       </head>
       <body className={inter.className}>
         <SessionProvider session={session}>
-          <MuseumProvider> {/* <-- Add the MuseumProvider here */}
+          <MuseumProvider>
             <Header />
-            <div className="grid grid-cols-10 min-h-screen gap-0">
+            <div className="grid grid-cols-10 gap-0">
               <div className="col-span-1 bg-red">
                 {/* Left content here */}
               </div>
@@ -41,7 +41,7 @@ export default async function RootLayout({
                 {/* Right content here */}
               </div>
             </div>
-          </MuseumProvider> {/* <-- Close the MuseumProvider here */}
+          </MuseumProvider>
         </SessionProvider>
       </body>
     </html>

@@ -13,23 +13,19 @@ export default function Page() {
 
     const handleModalClose = () => {
         setModalOpen(false);
-        // Restore body scrolling
         document.body.style.overflowY = 'auto';
     };
 
     const handleCitySelection = () => {
         localStorage.setItem('citySelected', 'true');
-        // Abstracted behavior when a city is selected
         handleModalClose();
     };
 
     const handleDetectLocation = () => {
-        // Abstracted behavior when location detection is allowed
         handleModalClose();
     };
 
     const handleSearchAndSelectCity = () => {
-        // Abstracted behavior when a city is searched and selected
         handleModalClose();
     };
 
@@ -39,7 +35,6 @@ export default function Page() {
         setIsInitialized(true);
 
         if (modalOpen) {
-            // Prevent body scrolling when modal is open
             document.body.style.overflowY = 'hidden';
         } else {
             document.body.style.overflowY = 'auto';
@@ -51,9 +46,11 @@ export default function Page() {
         <input type="checkbox" id="my_modal_7" defaultChecked={true} className="modal-toggle" />
         {
             isInitialized && modalOpen && (
-                <div className="modal">
+                <div className="modal" onClick={(e) => e.stopPropagation()}>
 
-                    <div className="modal-box max-w-4xl p-0">
+
+                    <div className="modal-box max-w-4xl p-0" onClick={(e) => e.stopPropagation()}>
+
                         <div className="w-full">
                             <div className="flex relative bg-white p-4 rounded-full items-center">
                                 <MagnifyingGlassIcon className="w-4 h-4 absolute left-4 ml-2" />
@@ -71,7 +68,6 @@ export default function Page() {
                             <LoadCities onCityClick={handleCitySelection} />
                         </div>
                     </div>
-                    <label className="modal-backdrop" htmlFor="my_modal_7">Close</label>
                 </div>
             )
         }
