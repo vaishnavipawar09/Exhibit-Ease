@@ -9,6 +9,16 @@ import { useMuseums } from '../contexts/MuseumContext';
 
 export default function Page() {
   const { museums, cities, states } = useMuseums();
+  const [checkedMember, setCheckedMember] = useState([]);
+  const onClickCheckboxHandler = (e) => {
+    if (e.target.checked) {
+        setCheckedMember((prev) => prev.concat(e.target.value));
+    } else {
+        setCheckedMember((prev) =>
+            prev.filter((item) => item !== e.target.value)
+        );
+    }
+};
   return <>
     {/*Search bar */}
     <div className="w-full px-10 mb-10">
@@ -27,7 +37,7 @@ export default function Page() {
     <div className="flex flex-col w-full lg:flex-row">
       <div className="grid flex-grow h-full card bg-base-300 rounded-box place-items-center lg:flex-shrink-0 lg:w-1/5">
         {/* Museum Type Filter */}
-        <div className="collapse collapse-plus bg-base-200">
+        <div className="collapse collapse-plus bg-base-200"> 
           <input type="radio" name="my-accordion-3" defaultChecked={true} />
           <div className="collapse-title text-xl font-medium">
             Type
@@ -52,7 +62,7 @@ export default function Page() {
               </label>
             </div>
           </div>
-        </div>
+        </div> 
         {/* Museum City Filter */}
         <div className="collapse collapse-plus bg-base-200">
           <input type="radio" name="my-accordion-3" />
