@@ -47,6 +47,10 @@ model User {
   image         String?
   payment       String?
   phoneNumber   String?
+  role          String?    @default("Customer") // Customer, Manager, Employee, Technician
+  code          String?    @unique // Unique login code
+  museumId      Int?
+  museum        Museum?    @relation(fields: [museumId], references: [id])
   accounts      Account[]
   sessions      Session[]
   Booking       Booking[]
@@ -60,26 +64,6 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
-}
-
-model Manager {
-  id       Int    @id @default(autoincrement())
-  name     String
-  museum   Museum @relation(fields: [museumId], references: [id])
-  museumId Int
-}
-
-model Employee {
-  id       Int       @id @default(autoincrement())
-  name     String
-  museum   Museum    @relation(fields: [museumId], references: [id])
-  Booking  Booking[]
-  museumId Int
-}
-
-model Technician {
-  id   Int    @id @default(autoincrement())
-  name String
 }
 
 model Museum {
@@ -99,9 +83,8 @@ model Museum {
   Booking     Booking[]
   Promo       Promo[]
   Favorite    Favorite[]
-  Employee    Employee[]
-  Manager     Manager[]
   Slideshow   Slideshow[]
+  User        User[]
 }
 
 model Booking {
@@ -116,10 +99,8 @@ model Booking {
   promo         Promo?      @relation(fields: [promoId], references: [id])
   museum        Museum      @relation(fields: [museumId], references: [id])
   user          User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  employee      Employee?   @relation(fields: [employeeId], references: [id])
   museumId      Int
   promoId       Int?
-  employeeId    Int?
 }
 
 model Promo {

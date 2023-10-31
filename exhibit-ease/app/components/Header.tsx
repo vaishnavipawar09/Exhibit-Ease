@@ -67,13 +67,13 @@ const Header: React.FC = () => {
       <div className="flex-1 flex justify-left ml-28 mr-auto">
         <Link
           href="\"
-          className="mr-4 mt-4 block text-teal-200 hover:text-white lg:mt-0 lg:inline-block"
+          className="mr-4 mt-4 block text-white lg:mt-0 lg:inline-block"
         >
           Home
         </Link>
         <Link
           href="\about"
-          className="mr-4 mt-4 block text-teal-200 hover:text-white lg:mt-0 lg:inline-block"
+          className="mr-4 mt-4 block text-white lg:mt-0 lg:inline-block"
         >
           About
         </Link>

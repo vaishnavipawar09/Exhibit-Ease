@@ -27,9 +27,9 @@ export default function Page() {
     <div className="flex flex-col w-full lg:flex-row">
       <div className="grid flex-grow h-full card bg-base-300 rounded-box place-items-center lg:flex-shrink-0 lg:w-1/5">
         <CreateFields fieldTitle='Type' setOfStrings={types} filterFunction={filterMuseums} />
-        {/* <CreateFields fieldTitle='City' setOfStrings={cities} />
-        <CreateFields fieldTitle='State' setOfStrings={states} />
-        <CreateFields fieldTitle='Price' /> */}
+        <CreateFields fieldTitle='City' setOfStrings={cities} filterFunction={filterMuseums} />
+        <CreateFields fieldTitle='State' setOfStrings={states} filterFunction={filterMuseums} />
+        <CreateFields fieldTitle='Price' filterFunction={filterMuseums} />
       </div>
 
 
@@ -51,7 +51,7 @@ export default function Page() {
 function CreateFields({ setOfStrings, fieldTitle, filterFunction }:
   { setOfStrings?: Array<string>, fieldTitle: string, filterFunction: Function }) {
   return <>
-    <div className="collapse collapse-plus bg-base-200">
+    <div className="collapse collapse-plus bg-white">
       <input type="radio" name="my-accordion-3" onChange={() => { }} />
       <div className="collapse-title text-xl font-medium">
         {fieldTitle}
