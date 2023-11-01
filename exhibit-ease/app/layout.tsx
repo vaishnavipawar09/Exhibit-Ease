@@ -22,7 +22,7 @@ export default async function RootLayout({
   const session = await getServerSession();
 
   return (
-    <html lang="en">
+    <html lang="en" className='bg-[#f7f4f3]'>
       <head>
         {/* Make sure to include any necessary meta tags, scripts, and styles here */}
       </head>

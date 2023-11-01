@@ -30,7 +30,7 @@ export default function Page() {
 
     </div>
 
-    <hr className="h-px my-8 border-0 bg-white" />
+    <hr className="h-px my-4 border-0" />
 
     <MuseumSection query={{ title: 'Art Museums', type: 'ART' }} />
     <MuseumSection query={{ title: 'Science Museums', type: 'SCIENCE' }} />

@@ -13,7 +13,7 @@ export default function Page() {
   const types = ['ART', 'HISTORY', 'SCIENCE']
   return <>
     {/*Search bar */}
-    <div className="flex relative bg-white py-4 rounded-full items-center">
+    <div className="flex relative py-4 rounded-full items-center">
       <MagnifyingGlassIcon className="w-4 h-4 absolute left-4" />
       <input
         type="text"
@@ -25,7 +25,7 @@ export default function Page() {
 
     {/* Left side filters and right side cards */}
     <div className="flex flex-col w-full lg:flex-row">
-      <div className="grid flex-grow h-full card bg-base-300 rounded-box place-items-center lg:flex-shrink-0 lg:w-1/5">
+      <div className="grid flex-grow h-full card rounded-box place-items-center lg:flex-shrink-0 lg:w-1/5">
         <CreateFields fieldTitle='Type' setOfStrings={types} filterFunction={filterMuseums} />
         <CreateFields fieldTitle='City' setOfStrings={cities} filterFunction={filterMuseums} />
         <CreateFields fieldTitle='State' setOfStrings={states} filterFunction={filterMuseums} />
@@ -51,7 +51,7 @@ export default function Page() {
 function CreateFields({ setOfStrings, fieldTitle, filterFunction }:
   { setOfStrings?: Array<string>, fieldTitle: string, filterFunction: Function }) {
   return <>
-    <div className="collapse collapse-plus bg-white">
+    <div className="collapse collapse-plus">
       <input type="radio" name="my-accordion-3" onChange={() => { }} />
       <div className="collapse-title text-xl font-medium">
         {fieldTitle}
