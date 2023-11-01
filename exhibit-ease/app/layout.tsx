@@ -5,9 +5,6 @@ import Header from './components/Header'
 import { getServerSession } from 'next-auth';
 import SessionProvider from './components/SessionProvider';
 import { MuseumProvider } from './contexts/MuseumContext';
-import * as React from "react";
-// 1. import `NextUIProvider` component
-import {NextUIProvider} from "@nextui-org/react";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -30,7 +27,6 @@ export default async function RootLayout({
         {/* Make sure to include any necessary meta tags, scripts, and styles here */}
       </head>
       <body className={inter.className}>
-    <NextUIProvider>
         <SessionProvider session={session}>
           <MuseumProvider>
             <Header />
@@ -47,7 +43,6 @@ export default async function RootLayout({
             </div>
           </MuseumProvider>
         </SessionProvider>
-      </NextUIProvider>
       </body>
     </html>
   );
