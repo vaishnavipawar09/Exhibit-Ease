@@ -7,29 +7,31 @@ import React, { FC, useEffect, useState } from 'react';
 import { MuseumCard } from '../components/MuseumSection';
 import { useMuseums } from '../contexts/MuseumContext';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { Accordion, Checkbox, Group, Input, Stack } from '@mantine/core';
 
 export default function Page() {
   const { museums, cities, states } = useMuseums();
   const types = ['ART', 'HISTORY', 'SCIENCE']
   return <>
     {/*Search bar */}
-    <div className="flex relative py-4 rounded-full items-center">
-      <MagnifyingGlassIcon className="w-4 h-4 absolute left-4" />
-      <input
-        type="text"
-        placeholder="Search Cities..."
-        className="flex-grow rounded-none pl-10 py-2 outline-none border"
-        onChange={() => { }}
+    <div className=" py-4">
+      <Input size="md" placeholder="Search anything..." leftSection={<MagnifyingGlassIcon className="h-6" color='black' />}
+        styles={{
+          input: { borderColor: 'black' }
+        }}
+        radius={8}
       />
     </div>
 
-    {/* Left side filters and right side cards */}
     <div className="flex flex-col w-full lg:flex-row">
-      <div className="grid flex-grow h-full card rounded-box place-items-center lg:flex-shrink-0 lg:w-1/5">
-        <CreateFields fieldTitle='Type' setOfStrings={types} filterFunction={filterMuseums} />
-        <CreateFields fieldTitle='City' setOfStrings={cities} filterFunction={filterMuseums} />
-        <CreateFields fieldTitle='State' setOfStrings={states} filterFunction={filterMuseums} />
-        <CreateFields fieldTitle='Price' filterFunction={filterMuseums} />
+      <div className="grid flex-grow h-full card rounded-box lg:flex-shrink-0 lg:w-1/5">
+        <Accordion defaultValue="Apples">
+
+          <CreateFields fieldTitle='Type' setOfStrings={types} filterFunction={filterMuseums} />
+          <CreateFields fieldTitle='City' setOfStrings={cities} filterFunction={filterMuseums} />
+          <CreateFields fieldTitle='State' setOfStrings={states} filterFunction={filterMuseums} />
+          <CreateFields fieldTitle='Price' filterFunction={filterMuseums} />
+        </Accordion>
       </div>
 
 
@@ -50,7 +52,40 @@ export default function Page() {
 
 function CreateFields({ setOfStrings, fieldTitle, filterFunction }:
   { setOfStrings?: Array<string>, fieldTitle: string, filterFunction: Function }) {
+  var needRangeSlider = fieldTitle === 'Price';
   return <>
+    <Accordion.Item key={fieldTitle} value={fieldTitle}>
+      <Accordion.Control>{fieldTitle}</Accordion.Control>
+      <Accordion.Panel>
+        {needRangeSlider ? <p>RangeSlider</p> :
+          <Checkbox.Group
+            defaultValue={[]}
+
+          >
+            <Stack mt="xs" align="flex-start">
+              {setOfStrings ? (setOfStrings.map((str: string, index: number) => (
+                <Checkbox key={index} value={str} label={str} color="black" />
+              ))) : <></>}
+            </Stack>
+          </Checkbox.Group>
+        }
+      </Accordion.Panel>
+    </Accordion.Item>
+
+  </>;
+}
+// {setOfStrings ? (setOfStrings.map((str: string, index: number) => (
+//   <Checkbox.Group
+//   defaultValue={[]}
+//   label={fieldTitle}
+//   value={[fieldTitle]}
+// >
+//   <Stack mt="xs" align="flex-start">
+//     <Checkbox value="react" label="React" />
+//   </Stack>
+// </Checkbox.Group>
+// ))): <p>Range Slider</p> 
+{/* <>
     <div className="collapse collapse-plus">
       <input type="radio" name="my-accordion-3" onChange={() => { }} />
       <div className="collapse-title text-xl font-medium">
@@ -67,8 +102,7 @@ function CreateFields({ setOfStrings, fieldTitle, filterFunction }:
           </div>
         ))) : <input type="range" min={0} max="100" value="40" className="range range-xs" onChange={() => { }} />}
       </div>
-    </div></>
-}
+    </div></> */}
 
 function filterMuseums({ museumList }: { museumList: Museum[] }) {
   var selectedTypes;

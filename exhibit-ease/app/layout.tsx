@@ -5,6 +5,11 @@ import Header from './components/Header'
 import { getServerSession } from 'next-auth';
 import SessionProvider from './components/SessionProvider';
 import { MuseumProvider } from './contexts/MuseumContext';
+import { MantineProvider, ColorSchemeScript } from '@mantine/core';
+import '@mantine/carousel/styles.css';
+import '@mantine/core/styles.css';
+
+
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,25 +29,27 @@ export default async function RootLayout({
   return (
     <html lang="en" className='bg-[#f7f4f3]'>
       <head>
-        {/* Make sure to include any necessary meta tags, scripts, and styles here */}
+        <ColorSchemeScript />
       </head>
       <body className={inter.className}>
-        <SessionProvider session={session}>
-          <MuseumProvider>
-            <Header />
-            <div className="grid grid-cols-10 gap-0">
-              <div className="col-span-1 bg-red">
-                {/* Left content here */}
+        <MantineProvider theme={{ white: '#f7f4f3' }}>
+          <SessionProvider session={session}>
+            <MuseumProvider>
+              <Header />
+              <div className="grid grid-cols-10 gap-0">
+                <div className="col-span-1 bg-red">
+                  {/* Left content here */}
+                </div>
+                <div className="col-span-8">
+                  {children}
+                </div>
+                <div className="col-span-1 bg-red">
+                  {/* Right content here */}
+                </div>
               </div>
-              <div className="col-span-8">
-                {children}
-              </div>
-              <div className="col-span-1 bg-red">
-                {/* Right content here */}
-              </div>
-            </div>
-          </MuseumProvider>
-        </SessionProvider>
+            </MuseumProvider>
+          </SessionProvider>
+        </MantineProvider>
       </body>
     </html>
   );

@@ -2,9 +2,11 @@
 
 import { useMuseums } from '@/app/contexts/MuseumContext';
 import { prisma } from '@/lib/prisma';
-import Image from "next/image";
+// import Image from "next/image";
 import Link from 'next/link';
-
+import { Image, Loader, Button, Text, Paper, Container } from '@mantine/core';
+import { Carousel } from '@mantine/carousel';
+import { ArrowSmallLeftIcon, ArrowSmallRightIcon } from '@heroicons/react/24/outline';
 
 export default function Page({ params }: {
   params: { id: string }
@@ -16,38 +18,46 @@ export default function Page({ params }: {
   return <main className="h-screen">
     {museum ? (
       <>
-        <div className="hero h-3/4"
-          style={{ backgroundImage: `linear-gradient(rgba(255, 255, 255, .6), rgba(255, 255, 255, .6)), url('${museum?.bg_image}')` }}>
-
-          <div className="hero-content flex-col lg:flex-row">
+        <Paper
+          style={{
+            height: '75%',
+            backgroundImage: `linear-gradient(rgba(255, 255, 255, .7), rgba(255, 255, 255, .7)), url('${museum?.bg_image}')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
+          <div className="flex flex-col lg:flex-row items-center justify-center h-full w-full">
             {museum && (
               <Image
-                src={museum.main_image || ""}
+                radius="md"
+                h={350}
+                w="auto"
+                fit="cover"
                 alt={museum.name}
-                width={350}
-                height={350}
-                className="w-[350px] h-[350px] rounded-xl border-black border-[3px] max-w-sm shadow-2xl"
+                src={museum.main_image || ""}
+                style={{ border: "3px solid black", maxWidth: '350px', maxHeight: '350px', boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.2)' }}
               />
             )}
-            <div className='mx-auto text-center'>
-              <h1 className="text-6xl font-bold mb-4 text-center">{museum?.name}</h1>
-              <div className="flex flex-col items-center">
-                <Link href={googleMapsLink}
-                  rel="noopener noreferrer" target="_blank"
-                  className="text-4xl font-semibold mb-4 text-center">
-                  {museum?.address}, {museum?.city}, {museum?.state}
-                </Link>
-                <a href={`/booking?id=${museum?.id}`} className="btn btn-primary">Book Tickets</a>
+            <div className="ml-2">
+              <Text size="2.5rem" style={{ fontWeight: 'bold' }}>{museum?.name}</Text>
+              <div className="flex flex-col items-start mt">
+                <Button component={Link} href={googleMapsLink} variant="transparent"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ padding: '0', margin: '0' }} color='black'>{museum?.address}, {museum?.city}, {museum?.state}
+                </Button>
+                <Button component={Link} href={`/booking?id=${museum?.id}`} size="md" variant="filled" color="#a60000">
+                  Book Tickets
+                </Button>
               </div>
             </div>
-
-
           </div>
-        </div>
+        </Paper>
 
         {/* About section */}
         <div className="container mx-auto px-5 md:px-20 py-10">
-          <p className="text-lg font-bold mb-4">About the Museum:</p>
+          <Text size="1.125rem" style={{ paddingBottom: '1rem', fontWeight: 'bold' }}>About the Museum:</Text>
           {museum && (
             <div className="mb-10">
               {museum?.description?.split('\\n').map((line, index) => (
@@ -58,85 +68,28 @@ export default function Page({ params }: {
             </div>
           )}
 
-          <hr className="h-px my-8 border-0 bg-black" />
-
-          <div className="carousel w-full max-h-[35rem] bg-black">
-
-            <div id="slide1" className="carousel-item flex items-center justify-center relative w-full">
+          <Text size="1.125rem" style={{ paddingBottom: '1rem', fontWeight: 'bold' }}>Additional Photos:</Text>
+          <Carousel
+            nextControlIcon={<ArrowSmallRightIcon color='white' />}
+            previousControlIcon={<ArrowSmallLeftIcon color='white' />}
+            loop={true}
+            style={{ backgroundColor: '#dedbd9' }}
+          >
+            <Carousel.Slide>
               <img src={museum?.bg_image || ''} className="w-auto h-[500px] object-cover mx-auto" />
-              <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-                <a href="#slide4" className="btn btn-circle">❮</a>
-                <a href="#slide2" className="btn btn-circle">❯</a>
-              </div>
-            </div>
-
-            <div id="slide2" className="carousel-item flex items-center justify-center relative w-full">
+            </Carousel.Slide>
+            <Carousel.Slide>
               <img src={museum?.main_image || ''} className="w-auto h-[500px] object-cover mx-auto" />
-              <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-                <a href="#slide1" className="btn btn-circle">❮</a>
-                <a href="#slide3" className="btn btn-circle">❯</a>
-              </div>
-            </div>
-
-            <div id="slide3" className="carousel-item flex items-center justify-center relative w-full">
+            </Carousel.Slide>
+            <Carousel.Slide>
               <img src={museum?.bg_image || ''} className="w-auto h-[500px] object-cover mx-auto" />
-              <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-                <a href="#slide2" className="btn btn-circle">❮</a>
-                <a href="#slide4" className="btn btn-circle">❯</a>
-              </div>
-            </div>
-
-            <div id="slide4" className="carousel-item flex items-center justify-center relative w-full">
-              <img src={museum?.bg_image || ''} className="w-auto h-[500px] object-cover mx-auto" />
-              <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-                <a href="#slide3" className="btn btn-circle">❮</a>
-                <a href="#slide1" className="btn btn-circle">❯</a>
-              </div>
-            </div>
-
-          </div>
-
-
+            </Carousel.Slide>
+          </Carousel>
 
         </div>
       </>
     ) : <div className="flex justify-center items-center h-full">
-      Loading...
+      <Loader />
     </div>}
   </main>
 }
-// FOR LATER TO MAKE CAROUSEL WORK
-
-// import React, { useState } from 'react';
-
-// const Carousel = ({ images }) => {
-//     // Using state to track the current slide
-//     const [currentSlide, setCurrentSlide] = useState(0);
-
-//     // Handling slide navigation
-//     const prevSlide = () => {
-//         setCurrentSlide((prevSlide) => (prevSlide - 1 + images.length) % images.length);
-//     }
-
-//     const nextSlide = () => {
-//         setCurrentSlide((prevSlide) => (prevSlide + 1) % images.length);
-//     }
-
-//     return (
-//         <div>
-//             {images.map((image, index) => (
-//                 currentSlide === index && (
-//                     <div key={index} className="carousel-item flex items-center justify-center relative w-full">
-//                         <img src={image} className="w-auto h-[500px] object-cover mx-auto" />
-//                         <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-//                             <button onClick={prevSlide} className="btn btn-circle">❮</button>
-//                             <button onClick={nextSlide} className="btn btn-circle">❯</button>
-//                         </div>
-//                     </div>
-//                 )
-//             ))}
-//         </div>
-//     );
-// }
-
-// export default Carousel;

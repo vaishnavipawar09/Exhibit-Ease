@@ -4,6 +4,7 @@ import { Museum, MuseumType } from '@prisma/client'
 import Link from 'next/link';
 import getMuseums from './Museums';
 import { useMuseums } from "../contexts/MuseumContext";
+import { Button, Card, Group, Overlay, Paper, Text, Title } from "@mantine/core";
 
 interface MuseumSectionProps {
     title: string
@@ -17,44 +18,47 @@ export const MuseumSection = ({ query }: { query: MuseumSectionProps }) => {
 
     return (
         <div className=' mb-5 rounded-sm'>
-            <p className='pt-5 pl-2 text-3xl font-semibold'>{query.title}</p>
-            <div className='divider divider-vertical my-[8px] pl-2 pr-2 before:bg-gray-500 after:bg-gray-500'></div>
-            <div className="flex w-full h-5/6 p-2">
-                {museums.map((museum, index) => (
-                    <MuseumCard key={index} index={index} museum={museum} />
-                ))}
+            <p className='pt-5 pb-2 text-3xl font-semibold'>{query.title}</p>
+            <div className="grid grid-cols-3 gap-4 w-full">
+                {museums && museums.map(
+                    (museum, index) => (
+                        <MuseumCard key={index} index={index} museum={museum} />
+                    )
+                )}
             </div>
         </div>
     );
 };
 
 export function MuseumCard({ museum, index }: { museum: Museum, index: number }) {
+    const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(museum?.address || '')}+${encodeURIComponent(museum?.city || '')}+${encodeURIComponent(museum?.state || '')}`;
     return (
-        <div className="flex w-full p-2 max-w-full min-h-[15rem]">
-            <div className="card rounded-sm w-full relative bg-base-100 shadow-lg overflow-hidden h-full flex flex-col">
-                <div className="relative flex-grow" style={{ backgroundImage: `url(${museum.main_image || ''})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-                    <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-30"></div>
-                </div>
+        <Card style={{ maxWidth: '100%', minHeight: '15rem', position: 'relative', overflow: 'hidden' }} radius="sm" shadow="lg">
+            <Image
+                src={museum.main_image || ''}
+                alt={museum.name}
+                layout="fill"
+                objectFit='cover'
+            />
 
-                {/* Card Content */}
-                <div className="absolute top-0 left-0 w-full h-full p-4 flex flex-col justify-between">
-                    <div>
-                        <h2 className="card-title line-clamp mb-[1rem] text-white">{museum.name}</h2>
-                        <Link
-                            href={"https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(museum?.address || '') + '+' + encodeURIComponent(museum?.city || '') + '+' + encodeURIComponent(museum?.state || '')}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            className='mb-[.5rem] block text-white'>
-                            {museum?.city}, {museum?.state}
-                        </Link>
-                    </div>
-                    <div className="card-actions justify-evenly mt-auto">
-                        <Link href={"/museums/" + museum.id} className="w-full">
-                            <button className="btn btn-primary w-full bg-[#661900] mt-2">View Museum</button>
-                        </Link>
-                    </div>
-                </div>
+            <div className="absolute top-0 right-0 bottom-0 left-0 bg-gray-800 bg-opacity-50"></div>
+
+            <div className="z-10 text-white">
+                <Text style={{ fontSize: '1.875rem', fontWeight: 'bold', lineHeight: '2rem' }} >
+                    {museum.name}
+                </Text>
+                <Text component="a" href={googleMapsLink} target="_blank" rel="noopener noreferrer" className="mb-2">
+                    {museum.city}, {museum.state}
+                </Text>
             </div>
-        </div>
+
+            <div className="absolute left-0 right-0 bottom-0 p-4">
+                <Button component={Link} href={`/museums/${museum.id}`} style={{ width: '100%', backgroundColor: '#a60000' }}>
+                    View Museum
+                </Button>
+
+            </div>
+        </Card>
+
     );
 }

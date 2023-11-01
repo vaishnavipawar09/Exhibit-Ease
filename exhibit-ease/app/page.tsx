@@ -4,29 +4,28 @@ import React from 'react';
 import Link from 'next/link';
 import CityPopUp from './components/CityPopUp';
 import { MuseumSection } from './components/MuseumSection';
+import { Button, Text } from '@mantine/core';
 
 export default function Page() {
 
   return <main className="h-screen ">
 
-    <CityPopUp />
+    {/* <CityPopUp /> */}
 
     {/* Top section */}
     <div className="flex flex-col rounded-sm justify-center items-center h-[70%] px-5 md:px-20 bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: `linear-gradient(rgba(255, 255, 255, .55), rgba(255, 255, 255, .55)), url(https://cdn.sanity.io/images/cctd4ker/production/909fa245367580e643fff7bedf1f5ca129443163-1200x630.jpg?w=600&q=75&auto=format)` }}>
 
-      <div className="text-center mb-10 md:mb-20">
-        <h1 className="text-8xl font-bold">
+      <div className="text-center mb-10">
+        <Text size='6rem' style={{ fontWeight: 'bold' }}>
           Exhibit Ease
-        </h1>
-        <h4 className="pt-5 text-xl font-semibold">
+        </Text>
+        <Text size='1.25rem' style={{ fontWeight: 'bold', paddingTop: '1.25rem' }}>
           One stop shop for all your museum needs
-        </h4>
+        </Text>
       </div>
 
-      <Link href={"/search/"} className="text-center">
-        <button className="btn btn-primary bg-[#661900]">Search Museums</button>
-      </Link>
+      <Button variant="filled" size="md" color="rgba(166, 0, 0, 1)" component={Link} href='/search'>Search Museums</Button>
 
     </div>
 
@@ -35,6 +34,6 @@ export default function Page() {
     <MuseumSection query={{ title: 'Art Museums', type: 'ART' }} />
     <MuseumSection query={{ title: 'Science Museums', type: 'SCIENCE' }} />
     <MuseumSection query={{ title: 'History Museums', type: 'HISTORY' }} />
-
+    <div className="pb-5"></div>
   </main>
 }

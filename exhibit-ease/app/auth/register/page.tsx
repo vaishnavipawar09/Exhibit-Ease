@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
+import { Alert } from '@mantine/core';
+import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -27,7 +29,6 @@ export default function Register() {
             });
 
             if (response.ok) {
-                const data = await response.json();
                 const status = await signIn('credentials', { email: formData.email, password: formData.password, callbackUrl: '/', redirect: false, role: 'C' })
                 router.push('/');
             } else {
@@ -44,18 +45,10 @@ export default function Register() {
             <div className="p-8 bg-white rounded shadow-lg w-96">
                 <h1 className="text-2xl font-bold mb-4">Customer Registration</h1>
                 {error &&
-                    <div className="alert p-2 alert-error bg-red-600 mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            className="stroke-current shrink-0 h-6 w-6 mr-2"
-                            fill="none"
-                            viewBox="0 0 24 24">
-                            <path strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                        <span>{error}</span>
-                    </div>
+                    <Alert variant="filled" color="red" withCloseButton icon={<ExclamationCircleIcon />}
+                        onClose={() => { setError('') }}>
+                        {error}
+                    </Alert>
                 }
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
@@ -97,7 +90,7 @@ export default function Register() {
                             className="w-full px-3 py-2 border rounded"
                         />
                     </div>
-                    <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Register</button>
+                    <button type="submit" className="w-full bg-black text-white p-2 rounded hover:bg-gray-700">Register</button>
                 </form>
                 <p className='text-center text mt-4'>Have an account? Login <Link href={'signin'} className='text-blue-600 underline'>here!</Link></p>
             </div>
