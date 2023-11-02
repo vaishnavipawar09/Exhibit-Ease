@@ -70,8 +70,8 @@ export default function Page({ params }: {
 
           <Text size="1.125rem" style={{ paddingBottom: '1rem', fontWeight: 'bold' }}>Additional Photos:</Text>
           <Carousel
-            nextControlIcon={<ArrowSmallRightIcon color='white' />}
-            previousControlIcon={<ArrowSmallLeftIcon color='white' />}
+            nextControlIcon={<ArrowSmallRightIcon color='black' />}
+            previousControlIcon={<ArrowSmallLeftIcon color='black' />}
             loop={true}
             style={{ backgroundColor: '#dedbd9' }}
           >

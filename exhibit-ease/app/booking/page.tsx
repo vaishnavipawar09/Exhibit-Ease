@@ -5,7 +5,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { Museum } from '@prisma/client';
 // import Image from "next/image";
 import { useMuseums } from '../contexts/MuseumContext';
-import { Image, Loader, Button, Text, Paper, Container } from '@mantine/core';
+import { Image, Loader, Button, Text, Paper, Container, Accordion, NumberInput, StylesApiProps } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import Link from 'next/link';
 
@@ -13,7 +13,9 @@ export default function BookingPage() {
     const searchParams = useSearchParams();
     const { getMuseumsByField } = useMuseums();
     var museum = getMuseumsByField('id', parseInt(searchParams?.get("id") || "1"))[0];
-
+    var fieldStyles = {
+        input: { borderColor: 'black', backgroundColor: 'white' },
+    }
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [numberOfTickets, setNumberOfTickets] = useState(1);
@@ -54,106 +56,101 @@ export default function BookingPage() {
                     </div>
                 </Paper>
 
-                <div className="collapse collapse-plus bg-base-200">
-                    <input type="radio" name="my-accordion-3" defaultChecked={true} />
-                    <div className="collapse-title text-xl font-bold">
-                        General Info
-                    </div>
-                    <div className="collapse-content">
-                        <p className="text-lg font-bold mb-4">Number of tickets (1-10) :</p>
-                        <input
-                            className="border-black border-[3px] max-w-sm shadow-2xl"
-                            type="number"
-                            value={numberOfTickets}
-                            onChange={(e) => {
-                                const newValue = Math.min(10, Math.max(1, parseInt(e.target.value, 10)));
-                                setNumberOfTickets(newValue);
-                            }}
-                        />
-                        <div className="flex flex-wrap items-center my-4">
-                            <p className="text-lg font-bold mr-4">Name:</p>
-                            <input
-                                className="border-black border-[3px] max-w-sm shadow-2xl"
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
+                <Accordion defaultValue="Apples">
+                    <Accordion.Item key='1' value='1'>
+                        <Accordion.Control>General Info</Accordion.Control>
+                        <Accordion.Panel>
+                            <NumberInput
+                                label="Total tickets"
+                                placeholder="Choose a number between 1 and 10"
+                                min={1}
+                                max={10}
+                                value={numberOfTickets}
+                                onChange={(e) => {
+                                    const newValue = Math.min(10, Math.max(1, Number(e)));
+                                    setNumberOfTickets(newValue);
+                                }}
+                                style={{ maxWidth: '24rem' }}
+                                styles={fieldStyles}
                             />
-                        </div>
+                            <div className="flex flex-wrap items-center my-4">
+                                <p className="text-lg font-bold mr-4">Name:</p>
+                                <input
+                                    className="border-black border-[3px] max-w-sm shadow-2xl"
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                            </div>
 
-                        <div className="flex flex-wrap items-center my-4">
-                            <p className="text-lg font-bold mr-4">Email:</p>
-                            <input
-                                className="border-black border-[3px] max-w-sm shadow-2xl"
-                                type="text"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div className="collapse collapse-plus bg-base-200">
-                    <input type="radio" name="my-accordion-3" />
-                    <div className="collapse-title text-xl font-bold">
-                        Payment Info
-                    </div>
-                    <div className="collapse-content">
-                        <p className="text-3xl font-bold mb-8 text-left">Add payment information</p>
+                            <div className="flex flex-wrap items-center my-4">
+                                <p className="text-lg font-bold mr-4">Email:</p>
+                                <input
+                                    className="border-black border-[3px] max-w-sm shadow-2xl"
+                                    type="text"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
+                        </Accordion.Panel>
+                    </Accordion.Item>
+                    <Accordion.Item key='2' value='2'>
+                        <Accordion.Control>Payment Info</Accordion.Control>
+                        <Accordion.Panel>
+                            <p className="text-3xl font-bold mb-8 text-left">Add payment information</p>
 
-                        <div className="flex flex-wrap items-center my-4">
-                            <p className="text-lg font-bold mr-4">Card Number:</p>
-                            <input
-                                className="border-black border-[3px] max-w-m shadow-2xl"
-                                type="text"
-                                value={card}
-                                onChange={(e) => setCard(e.target.value)}
-                            />
-                        </div>
+                            <div className="flex flex-wrap items-center my-4">
+                                <p className="text-lg font-bold mr-4">Card Number:</p>
+                                <input
+                                    className="border-black border-[3px] max-w-m shadow-2xl"
+                                    type="text"
+                                    value={card}
+                                    onChange={(e) => setCard(e.target.value)}
+                                />
+                            </div>
 
-                        <div className="flex flex-wrap items-center my-4">
-                            <p className="text-lg font-bold mr-4">Name on Card:</p>
-                            <input
-                                className="border-black border-[3px] max-w-m shadow-2xl"
-                                type="text"
-                                value={cardName}
-                                onChange={(e) => setCardName(e.target.value)}
-                            />
-                        </div>
+                            <div className="flex flex-wrap items-center my-4">
+                                <p className="text-lg font-bold mr-4">Name on Card:</p>
+                                <input
+                                    className="border-black border-[3px] max-w-m shadow-2xl"
+                                    type="text"
+                                    value={cardName}
+                                    onChange={(e) => setCardName(e.target.value)}
+                                />
+                            </div>
 
-                        <div className="flex flex-wrap items-center my-4">
-                            <p className="text-lg font-bold mr-4">Exp:</p>
-                            <input
-                                className="border-black border-[3px] max-w-md shadow-2xl"
-                                type="text"
-                                placeholder="MM/YY"
-                                value={monthYear}
-                                onChange={(e) => setMonthYear(e.target.value)}
-                            />
-                            <p className="text-lg font-bold mr-4" style={{ marginLeft: '10px' }}>CVV:</p>
-                            <input
-                                className="border-black border-[3px] max-w-md shadow-2xl"
-                                type="text"
-                                value={cvv}
-                                onChange={(e) => setcvv(e.target.value)}
-                            />
-                        </div>
-                        <a href={''} className="btn btn-primary">Confirm payment information</a>
-                    </div>
-                </div>
-                <div className="collapse collapse-plus bg-base-200">
-                    <input type="radio" name="my-accordion-3" />
-                    <div className="collapse-title text-xl font-bold">
-                        Confirmation Section
-                    </div>
-                    <div className="collapse-content">
-                        {displayPriceSection(ticketPrice, .08, promoDiscount, numberOfTickets)}
-                    </div>
-                </div>
-
-                <a href={`/confirmation?id=${museum?.id}`} className="btn btn-primary my-4">Complete Ticket Payment</a>
+                            <div className="flex flex-wrap items-center my-4">
+                                <p className="text-lg font-bold mr-4">Exp:</p>
+                                <input
+                                    className="border-black border-[3px] max-w-md shadow-2xl"
+                                    type="text"
+                                    placeholder="MM/YY"
+                                    value={monthYear}
+                                    onChange={(e) => setMonthYear(e.target.value)}
+                                />
+                                <p className="text-lg font-bold mr-4" style={{ marginLeft: '10px' }}>CVV:</p>
+                                <input
+                                    className="border-black border-[3px] max-w-md shadow-2xl"
+                                    type="text"
+                                    value={cvv}
+                                    onChange={(e) => setcvv(e.target.value)}
+                                />
+                            </div>
+                            <Button color='rgba(166, 0, 0, 1)' component={Link} href={''} style={{ margin: '1.25rem 0' }}>Confirm payment information</Button>
+                        </Accordion.Panel>
+                    </Accordion.Item>
+                    <Accordion.Item key='3' value='3'>
+                        <Accordion.Control>Total</Accordion.Control>
+                        <Accordion.Panel>
+                            {displayPriceSection(ticketPrice, .08, promoDiscount, numberOfTickets)}
+                        </Accordion.Panel>
+                    </Accordion.Item>
+                </Accordion>
+                <Button color='rgba(166, 0, 0, 1)' component={Link} href={`/confirmation?id=${museum?.id}`} style={{ margin: '1.25rem 0' }}>Complete Ticket Payment</Button>
             </div>
 
         ) : <div className="flex justify-center items-center h-full">
-            Loading...
+            <Loader />
         </div>}
     </main>
 }

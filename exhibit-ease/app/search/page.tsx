@@ -74,35 +74,6 @@ function CreateFields({ setOfStrings, fieldTitle, filterFunction }:
 
   </>;
 }
-// {setOfStrings ? (setOfStrings.map((str: string, index: number) => (
-//   <Checkbox.Group
-//   defaultValue={[]}
-//   label={fieldTitle}
-//   value={[fieldTitle]}
-// >
-//   <Stack mt="xs" align="flex-start">
-//     <Checkbox value="react" label="React" />
-//   </Stack>
-// </Checkbox.Group>
-// ))): <p>Range Slider</p> 
-{/* <>
-    <div className="collapse collapse-plus">
-      <input type="radio" name="my-accordion-3" onChange={() => { }} />
-      <div className="collapse-title text-xl font-medium">
-        {fieldTitle}
-      </div>
-      <div className="collapse-content">
-        {setOfStrings ? (setOfStrings.map((str: string, index: number) => (
-
-          <div key={index} className="form-control">
-            <label className="label cursor-pointer">
-              <input name={fieldTitle.toLowerCase()} value={str} type="checkbox" defaultChecked={false} className="checkbox" onChange={() => { }} />
-              <span className={str}>{str}</span>
-            </label>
-          </div>
-        ))) : <input type="range" min={0} max="100" value="40" className="range range-xs" onChange={() => { }} />}
-      </div>
-    </div></> */}
 
 function filterMuseums({ museumList }: { museumList: Museum[] }) {
   var selectedTypes;

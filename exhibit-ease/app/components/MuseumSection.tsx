@@ -1,10 +1,11 @@
-import Image from "next/image";
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import { Museum, MuseumType } from '@prisma/client'
 import Link from 'next/link';
 import getMuseums from './Museums';
 import { useMuseums } from "../contexts/MuseumContext";
-import { Button, Card, Group, Overlay, Paper, Text, Title } from "@mantine/core";
+import { Button, Card, Text, Image, Loader } from "@mantine/core";
 
 interface MuseumSectionProps {
     title: string
@@ -16,30 +17,35 @@ export const MuseumSection = ({ query }: { query: MuseumSectionProps }) => {
 
     var museums = getMuseumsByField('type', query.type as MuseumType).slice(0, 3);
 
-    return (
-        <div className=' mb-5 rounded-sm'>
+    return <main>
+        <div className='mb-5 rounded-sm'>
             <p className='pt-5 pb-2 text-3xl font-semibold'>{query.title}</p>
             <div className="grid grid-cols-3 gap-4 w-full">
-                {museums && museums.map(
+                {museums && museums.length > 0 ? museums.map(
                     (museum, index) => (
                         <MuseumCard key={index} index={index} museum={museum} />
                     )
-                )}
+                ) : <div className="flex justify-center items-center h-full w-full">
+                    <Loader />
+                </div>}
             </div>
         </div>
-    );
+    </main>;
 };
 
 export function MuseumCard({ museum, index }: { museum: Museum, index: number }) {
     const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(museum?.address || '')}+${encodeURIComponent(museum?.city || '')}+${encodeURIComponent(museum?.state || '')}`;
     return (
         <Card style={{ maxWidth: '100%', minHeight: '15rem', position: 'relative', overflow: 'hidden' }} radius="sm" shadow="lg">
-            <Image
-                src={museum.main_image || ''}
-                alt={museum.name}
-                layout="fill"
-                objectFit='cover'
-            />
+
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+                <Image
+                    src={museum.main_image || ''}
+                    alt={museum.name}
+                    fit="cover"
+                    style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100%', height: '100%' }}
+                />
+            </div>
 
             <div className="absolute top-0 right-0 bottom-0 left-0 bg-gray-800 bg-opacity-50"></div>
 
@@ -56,7 +62,6 @@ export function MuseumCard({ museum, index }: { museum: Museum, index: number })
                 <Button component={Link} href={`/museums/${museum.id}`} style={{ width: '100%', backgroundColor: '#a60000' }}>
                     View Museum
                 </Button>
-
             </div>
         </Card>
 
