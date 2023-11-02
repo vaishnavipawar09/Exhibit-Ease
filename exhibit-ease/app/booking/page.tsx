@@ -7,6 +7,7 @@ import { Museum } from '@prisma/client';
 import { useMuseums } from '../contexts/MuseumContext';
 import { Image, Loader, Button, Text, Paper, Container, Accordion, NumberInput, StylesApiProps } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
+import { TextInput, Space } from '@mantine/core';
 import Link from 'next/link';
 
 export default function BookingPage() {
@@ -74,22 +75,24 @@ export default function BookingPage() {
                                 styles={fieldStyles}
                             />
                             <div className="flex flex-wrap items-center my-4">
-                                <p className="text-lg font-bold mr-4">Name:</p>
-                                <input
-                                    className="border-black border-[3px] max-w-sm shadow-2xl"
-                                    type="text"
+                                <Text fw={700}  >Name: </Text>
+                                <Space w="md" />
+                                <TextInput
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
+                                    style={{ maxWidth: '24rem' }}
+                                    styles={fieldStyles}
                                 />
                             </div>
 
                             <div className="flex flex-wrap items-center my-4">
-                                <p className="text-lg font-bold mr-4">Email:</p>
-                                <input
-                                    className="border-black border-[3px] max-w-sm shadow-2xl"
-                                    type="text"
+                                <Text fw={700}  >Email: </Text>
+                                <Space w="md" />
+                                <TextInput
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    style={{ maxWidth: '24rem' }}
+                                    styles={fieldStyles}
                                 />
                             </div>
                         </Accordion.Panel>
@@ -100,40 +103,45 @@ export default function BookingPage() {
                             <p className="text-3xl font-bold mb-8 text-left">Add payment information</p>
 
                             <div className="flex flex-wrap items-center my-4">
-                                <p className="text-lg font-bold mr-4">Card Number:</p>
-                                <input
-                                    className="border-black border-[3px] max-w-m shadow-2xl"
-                                    type="text"
+                                <Text fw={700}  >Card Number: </Text>
+                                <Space w="md" />
+                                <TextInput
                                     value={card}
                                     onChange={(e) => setCard(e.target.value)}
+                                    style={{ maxWidth: '24rem' }}
+                                    styles={fieldStyles}
                                 />
                             </div>
 
                             <div className="flex flex-wrap items-center my-4">
-                                <p className="text-lg font-bold mr-4">Name on Card:</p>
-                                <input
-                                    className="border-black border-[3px] max-w-m shadow-2xl"
-                                    type="text"
+                                <Text fw={700}  >Name on Card: </Text>
+                                <Space w="md" />
+                                <TextInput
                                     value={cardName}
                                     onChange={(e) => setCardName(e.target.value)}
+                                    style={{ maxWidth: '24rem' }}
+                                    styles={fieldStyles}
                                 />
                             </div>
 
                             <div className="flex flex-wrap items-center my-4">
-                                <p className="text-lg font-bold mr-4">Exp:</p>
-                                <input
-                                    className="border-black border-[3px] max-w-md shadow-2xl"
-                                    type="text"
+                                <Text fw={700}  >Exp: </Text>
+                                <Space w="md" />
+                                <TextInput
                                     placeholder="MM/YY"
                                     value={monthYear}
                                     onChange={(e) => setMonthYear(e.target.value)}
+                                    style={{ maxWidth: '24rem' }}
+                                    styles={fieldStyles}
                                 />
-                                <p className="text-lg font-bold mr-4" style={{ marginLeft: '10px' }}>CVV:</p>
-                                <input
-                                    className="border-black border-[3px] max-w-md shadow-2xl"
-                                    type="text"
+                                <Space w="md" />
+                                <Text fw={700}  >CVV: </Text>
+                                <Space w="md" />
+                                <TextInput
                                     value={cvv}
                                     onChange={(e) => setcvv(e.target.value)}
+                                    style={{ maxWidth: '24rem' }}
+                                    styles={fieldStyles}
                                 />
                             </div>
                             <Button color='rgba(166, 0, 0, 1)' component={Link} href={''} style={{ margin: '1.25rem 0' }}>Confirm payment information</Button>
@@ -169,15 +177,16 @@ function getTotalTax(ticketPrice: number) {
 }
 
 function displayPriceSection(cost: number, tax: number, promoDiscount: number, numberOfTickets: number) {
+    const ticketCost = cost * numberOfTickets
     return <>
         <div className="border-black border-[3px] my-4 p-4 max-w-md shadow-2xl">
             <div className="flex justify-between">
                 <span>Cost:</span>
-                <span>${cost.toFixed(2)}</span>
+                <span>${ticketCost.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
                 <span>Tax:</span>
-                <span>${getTotalTax(cost)}</span>
+                <span>${getTotalTax(ticketCost).toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
                 <span>Promo:</span>
@@ -185,10 +194,12 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
             </div>
             <div className="flex justify-between">
                 <span>Total Cost:</span>
-                <span>${getTotalCost(numberOfTickets, cost)}</span>
+                <span>${getTotalCost(numberOfTickets, cost).toFixed(2)}</span>
             </div>
         </div>
 
 
     </>
 }
+
+
