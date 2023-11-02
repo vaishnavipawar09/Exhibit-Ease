@@ -77,7 +77,7 @@ function CreateFields({ setOfStrings, fieldTitle, selectedValues, filterFunction
             <Stack mt="xs" align="flex-start">
               {setOfStrings ? (setOfStrings.map((str: string, index: number) => (
                 <Checkbox key={index} value={str.toLowerCase()} label={str} color="black"
-                  onChange={(event) => updateQueryStrings({ title: fieldTitle, value: str })} />
+                  onChange={(event) => updateQueryStrings({ title: fieldTitle.toLowerCase(), value: str })} />
               ))) : <></>}
             </Stack>
           </Checkbox.Group>
