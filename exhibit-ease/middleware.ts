@@ -7,7 +7,7 @@ export default withAuth(
             const redirectUrl = `${req.nextUrl.origin}/not-found?message=${encodeURIComponent("Admin access only.")}`;
             return NextResponse.redirect(redirectUrl);
         }
-        if (req.nextUrl.pathname.startsWith("/employee") && req.nextauth.token?.role !== "M") {
+        if (req.nextUrl.pathname.startsWith("/employee") && req.nextauth.token?.role !== "E") {
             const redirectUrl = `${req.nextUrl.origin}/not-found?message=${encodeURIComponent("Employee access only.")}`;
             return NextResponse.redirect(redirectUrl);
         }
