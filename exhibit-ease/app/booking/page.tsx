@@ -10,25 +10,18 @@ import { Carousel } from '@mantine/carousel';
 import { TextInput, Space } from '@mantine/core';
 import Link from 'next/link';
 import { useForm } from '@mantine/form';
+import { useSession } from "next-auth/react";
 
 var fieldStyles = {
     input: { borderColor: 'black', backgroundColor: 'white' },
 }
 
 export default function BookingPage() {
+    const { data: session } = useSession();
     const searchParams = useSearchParams();
     const { getMuseumsByField } = useMuseums();
     var museum = getMuseumsByField('id', parseInt(searchParams?.get("id") || "1"))[0];
-
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [numberOfTickets, setNumberOfTickets] = useState(1);
-    const [promoDiscount, setPromoDiscount] = useState(0);
     const ticketPrice = museum?.cost || 0;
-    const [card, setCard] = useState("");
-    const [cardName, setCardName] = useState("");
-    const [monthYear, setMonthYear] = useState("");
-    const [cvv, setcvv] = useState("");
 
     return <main className="h-screen">
         {museum ? (
@@ -60,61 +53,9 @@ export default function BookingPage() {
                     </div>
                 </Paper>
 
-                <Accordion defaultValue="Apples">
-                    <Accordion.Item key='1' value='1'>
-                        <Accordion.Control>General Info</Accordion.Control>
-                        <Accordion.Panel>
-                            <NumberInput
-                                label="Total tickets"
-                                placeholder="Choose a number between 1 and 10"
-                                min={1}
-                                max={10}
-                                value={numberOfTickets}
-                                onChange={(e) => {
-                                    const newValue = Math.min(10, Math.max(1, Number(e)));
-                                    setNumberOfTickets(newValue);
-                                }}
-                                style={{ maxWidth: '24rem' }}
-                                styles={fieldStyles}
-                            />
-                            <div className="flex flex-wrap items-center my-4">
-                                <Text fw={700}  >Name: </Text>
-                                <Space w="md" />
-                                <TextInput
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    style={{ maxWidth: '24rem' }}
-                                    styles={fieldStyles}
-                                />
-                            </div>
+                <CreditCardForm ticketPrice={ticketPrice} promoDiscount={0} />
 
-                            <div className="flex flex-wrap items-center my-4">
-                                <Text fw={700}  >Email: </Text>
-                                <Space w="md" />
-                                <TextInput
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    style={{ maxWidth: '24rem' }}
-                                    styles={fieldStyles}
-                                />
-                            </div>
-                        </Accordion.Panel>
-                    </Accordion.Item>
-                    <Accordion.Item key='2' value='2'>
-                        <Accordion.Control>Payment Info</Accordion.Control>
-                        <Accordion.Panel>
-                            <p className="text-3xl font-bold mb-8 text-left">Add payment information</p>
-                            <CreditCardForm />
 
-                        </Accordion.Panel>
-                    </Accordion.Item>
-                    <Accordion.Item key='3' value='3'>
-                        <Accordion.Control>Total</Accordion.Control>
-                        <Accordion.Panel>
-                            {displayPriceSection(ticketPrice, .08, promoDiscount, numberOfTickets)}
-                        </Accordion.Panel>
-                    </Accordion.Item>
-                </Accordion>
                 <Button color='rgba(166, 0, 0, 1)' component={Link} href={`/confirmation?id=${museum?.id}`} style={{ margin: '1.25rem 0' }}>Complete Ticket Payment</Button>
             </div>
 
@@ -163,10 +104,14 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
     </>
 }
 
-export function CreditCardForm() {
+export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: number, promoDiscount: number }) {
     // Initialize form with validation rules
+    const { data: session } = useSession();
     const form = useForm({
         initialValues: {
+            totalTickets: 0,
+            name: session ? session.user?.name : '',
+            email: session ? session.user?.email : '',
             cardNumber: '',
             expDate: '',
             cvv: '',
@@ -205,9 +150,44 @@ export function CreditCardForm() {
         const value = event.target.value.replace(/\D/g, ''); // Remove non-digits
         form.setFieldValue('zipCode', value.slice(0, 5))
     };
+
     return (
         <Box style={{ maxWidth: 300 }}>
             <form onSubmit={form.onSubmit((values) => console.log(values))}>
+
+
+                <p className="text-3xl font-bold mb-8 text-left"> General Info</p>
+                <NumberInput
+                    label="Total tickets"
+                    placeholder="Choose a number between 1 and 10"
+                    min={1}
+                    max={10}
+                    {...form.getInputProps('totalTickets')}
+                    style={{ maxWidth: '24rem' }}
+                    styles={fieldStyles}
+                />
+                <div className="flex flex-wrap items-center my-4">
+                    <Text fw={700}  >Name: </Text>
+                    <Space w="md" />
+                    <TextInput
+                        {...form.getInputProps('name')}
+                        style={{ maxWidth: '24rem' }}
+                        styles={fieldStyles}
+                    />
+                </div>
+
+                <div className="flex flex-wrap items-center my-4">
+                    <Text fw={700}  >Email: </Text>
+                    <Space w="md" />
+                    <TextInput
+                        {...form.getInputProps('email')}
+                        style={{ maxWidth: '24rem' }}
+                        styles={fieldStyles}
+                    />
+                </div>
+
+                <p className="text-3xl font-bold mb-8 text-left">Add payment information</p>
+
                 <TextInput
                     required
                     label="Card Number"
@@ -251,7 +231,9 @@ export function CreditCardForm() {
                 <Group mt="md">
                     <Button color='rgba(166, 0, 0, 1)' type="submit" style={{ margin: '1.25rem 0' }}>Confirm payment information</Button>
                 </Group>
+                {displayPriceSection(ticketPrice, .08, promoDiscount, form.values.totalTickets)}
             </form>
+
         </Box>
     );
 }

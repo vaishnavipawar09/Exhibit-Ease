@@ -99,6 +99,7 @@ export const options: NextAuthOptions = {
                 session.user.name = token.name;
                 session.user.role = token.role
                 session.user.phoneNumber = token.phoneNumber
+                session.user.museumId = token.museumId
             }
             return session;
         },
@@ -106,6 +107,7 @@ export const options: NextAuthOptions = {
             if (user) {
                 token.role = user.role;
                 token.phoneNumber = user.phoneNumber;
+                token.museumId = user.museumId;
             }
             return token;
         },

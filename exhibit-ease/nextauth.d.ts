@@ -5,6 +5,7 @@ import { DefaultSession, DefaultUser } from "next-auth";
 interface IUser extends DefaultUser {
     role?: string;
     phoneNumber?: string | null;
+    museumId?: number | null;
 }
 declare module "next-auth" {
     interface User extends IUser { }
