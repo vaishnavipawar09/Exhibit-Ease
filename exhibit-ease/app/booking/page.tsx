@@ -5,18 +5,21 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { Museum } from '@prisma/client';
 // import Image from "next/image";
 import { useMuseums } from '../contexts/MuseumContext';
-import { Image, Loader, Button, Text, Paper, Container, Accordion, NumberInput, StylesApiProps } from '@mantine/core';
+import { Image, Loader, Button, Text, Paper, Container, Accordion, NumberInput, StylesApiProps, Group, Box } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import { TextInput, Space } from '@mantine/core';
 import Link from 'next/link';
+import { useForm } from '@mantine/form';
+
+var fieldStyles = {
+    input: { borderColor: 'black', backgroundColor: 'white' },
+}
 
 export default function BookingPage() {
     const searchParams = useSearchParams();
     const { getMuseumsByField } = useMuseums();
     var museum = getMuseumsByField('id', parseInt(searchParams?.get("id") || "1"))[0];
-    var fieldStyles = {
-        input: { borderColor: 'black', backgroundColor: 'white' },
-    }
+
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [numberOfTickets, setNumberOfTickets] = useState(1);
@@ -101,50 +104,8 @@ export default function BookingPage() {
                         <Accordion.Control>Payment Info</Accordion.Control>
                         <Accordion.Panel>
                             <p className="text-3xl font-bold mb-8 text-left">Add payment information</p>
+                            <CreditCardForm />
 
-                            <div className="flex flex-wrap items-center my-4">
-                                <Text fw={700}  >Card Number: </Text>
-                                <Space w="md" />
-                                <TextInput
-                                    value={card}
-                                    onChange={(e) => setCard(e.target.value)}
-                                    style={{ maxWidth: '24rem' }}
-                                    styles={fieldStyles}
-                                />
-                            </div>
-
-                            <div className="flex flex-wrap items-center my-4">
-                                <Text fw={700}  >Name on Card: </Text>
-                                <Space w="md" />
-                                <TextInput
-                                    value={cardName}
-                                    onChange={(e) => setCardName(e.target.value)}
-                                    style={{ maxWidth: '24rem' }}
-                                    styles={fieldStyles}
-                                />
-                            </div>
-
-                            <div className="flex flex-wrap items-center my-4">
-                                <Text fw={700}  >Exp: </Text>
-                                <Space w="md" />
-                                <TextInput
-                                    placeholder="MM/YY"
-                                    value={monthYear}
-                                    onChange={(e) => setMonthYear(e.target.value)}
-                                    style={{ maxWidth: '24rem' }}
-                                    styles={fieldStyles}
-                                />
-                                <Space w="md" />
-                                <Text fw={700}  >CVV: </Text>
-                                <Space w="md" />
-                                <TextInput
-                                    value={cvv}
-                                    onChange={(e) => setcvv(e.target.value)}
-                                    style={{ maxWidth: '24rem' }}
-                                    styles={fieldStyles}
-                                />
-                            </div>
-                            <Button color='rgba(166, 0, 0, 1)' component={Link} href={''} style={{ margin: '1.25rem 0' }}>Confirm payment information</Button>
                         </Accordion.Panel>
                     </Accordion.Item>
                     <Accordion.Item key='3' value='3'>
@@ -202,4 +163,95 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
     </>
 }
 
+export function CreditCardForm() {
+    // Initialize form with validation rules
+    const form = useForm({
+        initialValues: {
+            cardNumber: '',
+            expDate: '',
+            cvv: '',
+            zipCode: '',
+        },
 
+        validate: {
+            cardNumber: (value) => (/^\d{16}$/.test(value) ? null : 'Invalid card number'),
+            expDate: (value) => (/^(0[1-9]|1[0-2])\/?([0-9]{2})$/.test(value) ? null : 'Invalid date'),
+            cvv: (value) => (/^\d{3,4}$/.test(value) ? null : 'Invalid CVV'),
+            zipCode: (value) => (/^\d{5}$/.test(value) ? null : 'Invalid ZIP code'),
+        },
+    });
+
+    const handleCardNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value.replace(/\D/g, ''); // Remove non-digits
+        form.setFieldValue('cardNumber', value.slice(0, 16))
+    };
+
+    const handleExpDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value.replace(/\D/g, '');
+        let formattedValue = value;
+        if (value.length >= 3) {
+            // Add a slash after the second digit if the length is at least 3
+            formattedValue = `${value.slice(0, 2)}/${value.slice(2, 4)}`;
+        }
+        form.setFieldValue('expDate', formattedValue)
+    };
+
+    const handleCvvChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value.replace(/\D/g, ''); // Remove non-digits
+        form.setFieldValue('cvv', value.slice(0, 3))
+    };
+
+    const handleZipCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value.replace(/\D/g, ''); // Remove non-digits
+        form.setFieldValue('zipCode', value.slice(0, 5))
+    };
+    return (
+        <Box style={{ maxWidth: 300 }}>
+            <form onSubmit={form.onSubmit((values) => console.log(values))}>
+                <TextInput
+                    required
+                    label="Card Number"
+                    placeholder="1234 1234 1234 1234"
+                    {...form.getInputProps('cardNumber')}
+                    error={form.errors.cardNumber}
+                    onChange={handleCardNumberChange}
+                    styles={fieldStyles}
+                />
+
+                <TextInput
+                    required
+                    label="Expiration Date"
+                    placeholder="MM/YY"
+                    {...form.getInputProps('expDate')}
+                    error={form.errors.expDate}
+                    onChange={handleExpDateChange}
+                    styles={fieldStyles}
+                />
+
+                <TextInput
+                    required
+                    label="CVV"
+                    placeholder="123"
+                    {...form.getInputProps('cvv')}
+                    error={form.errors.cvv}
+                    onChange={handleCvvChange}
+                    styles={fieldStyles}
+                />
+
+                <TextInput
+                    required
+                    label="ZIP Code"
+                    placeholder="12345"
+                    {...form.getInputProps('zipCode')}
+                    error={form.errors.zipCode}
+                    onChange={handleZipCodeChange}
+                    styles={fieldStyles}
+                />
+
+                <Group mt="md">
+                    <Button color='rgba(166, 0, 0, 1)' type="submit" style={{ margin: '1.25rem 0' }}>Confirm payment information</Button>
+                </Group>
+            </form>
+        </Box>
+    );
+}
