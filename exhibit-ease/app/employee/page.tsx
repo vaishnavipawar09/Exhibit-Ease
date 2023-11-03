@@ -1,13 +1,10 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { Museum } from '@prisma/client';
-// import Image from "next/image";
 import { useMuseums } from '../contexts/MuseumContext';
 import { Image, Loader, Button, Text, Paper, Container, Accordion, NumberInput, StylesApiProps, Group, Box } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
-import { TextInput, Space } from '@mantine/core';
+import { TextInput, Space, Tabs } from '@mantine/core';
 import Link from 'next/link';
 import { useForm } from '@mantine/form';
 import { useSession } from "next-auth/react";
@@ -18,7 +15,7 @@ var fieldStyles = {
 
 export default function BookingPage() {
     const { data: session } = useSession();
-    const searchParams = useSearchParams();
+    const [activeTab, setActiveTab] = useState<string | null>('first');
     const { getMuseumsByField } = useMuseums();
     var empMuseumId = session?.user?.museumId;
     var museum = getMuseumsByField('id', empMuseumId || 1)[0];
@@ -55,7 +52,19 @@ export default function BookingPage() {
                     </div>
                 </Paper>
 
-                <CreditCardForm ticketPrice={ticketPrice} promoDiscount={0} />
+                <Tabs value={activeTab} onChange={setActiveTab}>
+                    <Tabs.List style={{ paddingTop: '1rem' }}>
+                        <Tabs.Tab value="first" color='rgba(166, 0, 0, 1)' style={{ fontSize: '1.25rem' }}>Card</Tabs.Tab>
+                        <Tabs.Tab value="second" color='rgba(166, 0, 0, 1)' style={{ fontSize: '1.25rem' }}>Cash</Tabs.Tab>
+                    </Tabs.List>
+
+                    <Tabs.Panel value="first">
+                        <CreditCardForm ticketPrice={ticketPrice} promoDiscount={0} />
+                    </Tabs.Panel>
+                    <Tabs.Panel value="second">
+                        <CashForm ticketPrice={ticketPrice} promoDiscount={0} />
+                    </Tabs.Panel>
+                </Tabs>
 
 
                 <Button color='rgba(166, 0, 0, 1)' component={Link} href={`/confirmation?id=${museum?.id}`} style={{ margin: '1.25rem 0' }}>Complete Ticket Payment</Button>
@@ -80,7 +89,7 @@ function getTotalTax(ticketPrice: number) {
     return ticketPrice;
 }
 
-function displayPriceSection(cost: number, tax: number, promoDiscount: number, numberOfTickets: number) {
+function displayPriceSectionCard(cost: number, tax: number, promoDiscount: number, numberOfTickets: number) {
     const ticketCost = cost * numberOfTickets
     return <>
         <div className="border-black border-[3px] my-4 p-4 max-w-md shadow-2xl">
@@ -106,6 +115,41 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
     </>
 }
 
+function displayPriceSectionCash(cost: number, tax: number, promoDiscount: number, numberOfTickets: number, amountPaid: number) {
+    const ticketCost = cost * numberOfTickets
+    const amountDue = amountPaid - getTotalCost(numberOfTickets, cost)
+    return <>
+        <div className="border-black border-[3px] my-4 p-4 max-w-md shadow-2xl">
+            <div className="flex justify-between">
+                <span>Cost:</span>
+                <span>${ticketCost.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+                <span>Tax:</span>
+                <span>${getTotalTax(ticketCost).toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+                <span>Promo:</span>
+                <span>-${promoDiscount.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+                <span>Total Cost:</span>
+                <span>${getTotalCost(numberOfTickets, cost).toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+                <span>Amount Paid:</span>
+                <span>${amountPaid}</span>
+            </div>
+            <div className="flex justify-between">
+                <span>Amount Due:</span>
+                <span>${amountDue.toFixed(2)}</span>
+            </div>
+        </div>
+
+
+    </>
+}
+
 export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: number, promoDiscount: number }) {
     // Initialize form with validation rules
     const { data: session } = useSession();
@@ -113,7 +157,6 @@ export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: nu
         initialValues: {
             totalTickets: 0,
             name: session ? session.user?.name : '',
-            email: session ? session.user?.email : '',
             cardNumber: '',
             expDate: '',
             cvv: '',
@@ -158,7 +201,7 @@ export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: nu
             <form onSubmit={form.onSubmit((values) => console.log(values))}>
 
 
-                <p className="text-3xl font-bold mb-8 text-left"> General Info</p>
+                <p className="text-3xl font-bold mb-8 my-4 text-left"> General Info</p>
                 <NumberInput
                     label="Total tickets"
                     placeholder="Choose a number between 1 and 10"
@@ -173,16 +216,6 @@ export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: nu
                     <Space w="md" />
                     <TextInput
                         {...form.getInputProps('name')}
-                        style={{ maxWidth: '24rem' }}
-                        styles={fieldStyles}
-                    />
-                </div>
-
-                <div className="flex flex-wrap items-center my-4">
-                    <Text fw={700}  >Email: </Text>
-                    <Space w="md" />
-                    <TextInput
-                        {...form.getInputProps('email')}
                         style={{ maxWidth: '24rem' }}
                         styles={fieldStyles}
                     />
@@ -233,7 +266,64 @@ export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: nu
                 <Group mt="md">
                     <Button color='rgba(166, 0, 0, 1)' type="submit" style={{ margin: '1.25rem 0' }}>Confirm payment information</Button>
                 </Group>
-                {displayPriceSection(ticketPrice, .08, promoDiscount, form.values.totalTickets)}
+                {displayPriceSectionCard(ticketPrice, .08, promoDiscount, form.values.totalTickets)}
+            </form>
+
+        </Box>
+    );
+}
+
+export function CashForm({ ticketPrice, promoDiscount }: { ticketPrice: number, promoDiscount: number }) {
+    // Initialize form with validation rules
+    const { data: session } = useSession();
+    const form = useForm({
+        initialValues: {
+            totalTickets: 0,
+            amountPaid: 0,
+            name: session ? session.user?.name : '',
+            email: session ? session.user?.email : ''
+        },
+    });
+
+
+    return (
+        <Box style={{ maxWidth: 300 }}>
+            <form onSubmit={form.onSubmit((values) => console.log(values))}>
+                <p className="text-3xl font-bold mb-8 my-4 text-left"> General Info</p>
+                <NumberInput
+                    label="Total tickets"
+                    placeholder="Choose a number between 1 and 10"
+                    min={1}
+                    max={10}
+                    {...form.getInputProps('totalTickets')}
+                    style={{ maxWidth: '24rem' }}
+                    styles={fieldStyles}
+                />
+                <div className="flex flex-wrap items-center my-4">
+                    <Text fw={700}  >Name: </Text>
+                    <Space w="md" />
+                    <TextInput
+                        {...form.getInputProps('name')}
+                        style={{ maxWidth: '24rem' }}
+                        styles={fieldStyles}
+                    />
+                </div>
+
+                <div className="flex flex-wrap items-center my-4">
+                    <Text fw={700}  >Amount Paid: </Text>
+                    <Space w="md" />
+                    <NumberInput
+                        decimalScale={2}
+                        fixedDecimalScale
+                        defaultValue={2.2}
+                        {...form.getInputProps('amountPaid')}
+                        style={{ maxWidth: '24rem' }}
+                        styles={fieldStyles}
+                    />
+                </div>
+
+                {displayPriceSectionCash(ticketPrice, .08, promoDiscount, form.values.totalTickets, form.values.amountPaid)}
+
             </form>
 
         </Box>
