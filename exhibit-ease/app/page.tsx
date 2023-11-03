@@ -10,7 +10,7 @@ export default function Page() {
 
   return <main className="h-screen ">
 
-    {/* <CityPopUp /> */}
+    <CityPopUp />
 
     {/* Top section */}
     <div className="flex flex-col rounded-sm justify-center items-center h-[70%] px-5 md:px-20 bg-cover bg-center bg-no-repeat"

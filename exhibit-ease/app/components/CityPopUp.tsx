@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import { BuildingLibraryIcon, BuildingOffice2Icon, BuildingOfficeIcon, HomeIcon, HomeModernIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MapPinIcon } from "@heroicons/react/24/outline";
 import { useMuseums } from "../contexts/MuseumContext";
