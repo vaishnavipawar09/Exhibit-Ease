@@ -3,6 +3,8 @@ import { BuildingLibraryIcon, BuildingOffice2Icon, BuildingOfficeIcon, HomeIcon,
 import { MapPinIcon } from "@heroicons/react/24/outline";
 import { useMuseums } from "../contexts/MuseumContext";
 import React, { useState, useEffect, FC } from "react";
+import { Button, Input, Modal } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 
 interface LoadCitiesProps {
     onCityClick: () => void;
@@ -11,7 +13,7 @@ interface LoadCitiesProps {
 export default function Page() {
     const [modalOpen, setModalOpen] = useState(true);
     const [isInitialized, setIsInitialized] = useState(false);
-
+    const [opened, { open, close }] = useDisclosure(true);
     const handleModalClose = () => {
         setModalOpen(false);
         document.body.style.overflowY = 'auto';
@@ -22,58 +24,78 @@ export default function Page() {
         handleModalClose();
     };
 
-    const handleDetectLocation = () => {
-        handleModalClose();
-    };
+    // const handleDetectLocation = () => {
+    //     handleModalClose();
+    // };
 
-    const handleSearchAndSelectCity = () => {
-        handleModalClose();
-    };
+    // const handleSearchAndSelectCity = () => {
+    //     handleModalClose();
+    // };
 
-    useEffect(() => {
-        const citySelected = localStorage.getItem('citySelected');
-        setModalOpen(!citySelected);
-        setIsInitialized(true);
+    // useEffect(() => {
+    //     const citySelected = localStorage.getItem('citySelected');
+    //     setModalOpen(!citySelected);
+    //     setIsInitialized(true);
 
-        if (modalOpen) {
-            document.body.style.overflowY = 'hidden';
-        } else {
-            document.body.style.overflowY = 'auto';
-        }
-    }, [modalOpen]);
+    //     if (modalOpen) {
+    //         document.body.style.overflowY = 'hidden';
+    //     } else {
+    //         document.body.style.overflowY = 'auto';
+    //     }
+    // }, [modalOpen]);
 
-    return <div className="invisible w-1 h-1 p-0 m-[-1] absolute overflow-hidden border-0 ">
-        <label htmlFor="my_modal_7" className="btn">open modal</label>
-        <input type="checkbox" id="my_modal_7" defaultChecked={true} className="modal-toggle" />
-        {
-            isInitialized && modalOpen && (
-                <div className="modal" onClick={(e) => e.stopPropagation()}>
-
-
-                    <div className="modal-box max-w-4xl p-0" onClick={(e) => e.stopPropagation()}>
-
-                        <div className="w-full">
-                            <div className="flex relative bg-white p-4 rounded-full items-center">
-                                <MagnifyingGlassIcon className="w-4 h-4 absolute left-4 ml-2" />
-                                <input
-                                    type="text"
-                                    placeholder="Search Cities..."
-                                    className="flex-grow rounded-none pl-8 py-2 outline-none border"
-                                />
-                            </div>
-
-                            <div className="flex bg-white p-4">
-                                <MapPinIcon className="w-6 h-6" />
-                                <p>Detect my location</p>
-                            </div>
-                            <LoadCities onCityClick={handleCitySelection} />
-                        </div>
-                    </div>
+    return (
+        <>
+            <Modal withCloseButton={false} closeOnClickOutside={false} closeOnEscape={false} opened={opened} onClose={close} centered>
+                <div className=" py-4">
+                    <Input size="md" placeholder="Search cities..." leftSection={<MagnifyingGlassIcon className="h-6" color='black' />}
+                        styles={{
+                            input: { borderColor: 'black', backgroundColor: 'white' }
+                        }}
+                        radius={8}
+                    />
                 </div>
-            )
-        }
 
-    </div>
+                <Button color="rgba(166, 0, 0, 1)" leftSection={<MapPinIcon className="h-4 w-4" />} variant="transparent">Detect my location</Button>
+                <LoadCities onCityClick={handleCitySelection} />
+            </Modal>
+
+            {/* <Button onClick={open}>Open centered Modal</Button>n  */}
+        </>
+    )
+
+    // return <div className="invisible w-1 h-1 p-0 m-[-1] absolute overflow-hidden border-0 ">
+    //     <label htmlFor="my_modal_7" className="btn">open modal</label>
+    //     <input type="checkbox" id="my_modal_7" defaultChecked={true} className="modal-toggle" />
+    //     {
+    //         isInitialized && modalOpen && (
+    //             <div className="modal" onClick={(e) => e.stopPropagation()}>
+
+
+    //                 <div className="modal-box max-w-4xl p-0" onClick={(e) => e.stopPropagation()}>
+
+    //                     <div className="w-full">
+    //                         <div className="flex relative bg-white p-4 rounded-full items-center">
+    //                             <MagnifyingGlassIcon className="w-4 h-4 absolute left-4 ml-2" />
+    //                             <input
+    //                                 type="text"
+    //                                 placeholder="Search Cities..."
+    //                                 className="flex-grow rounded-none pl-8 py-2 outline-none border"
+    //                             />
+    //                         </div>
+
+    //                         <div className="flex bg-white p-4">
+    //                             <MapPinIcon className="w-6 h-6" />
+    //                             <p>Detect my location</p>
+    //                         </div>
+    //                         <LoadCities onCityClick={handleCitySelection} />
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         )
+    //     }
+
+    // </div>
 }
 
 
