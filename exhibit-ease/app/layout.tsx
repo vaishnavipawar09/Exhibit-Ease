@@ -4,8 +4,9 @@ import { Inter } from 'next/font/google'
 import Header from './components/Header'
 import { getServerSession } from 'next-auth';
 import SessionProvider from './components/SessionProvider';
-import { MuseumProvider } from './contexts/MuseumContext';
 import { MantineProvider, ColorSchemeScript } from '@mantine/core';
+import Providers from './contexts/Providers';
+
 import '@mantine/carousel/styles.css';
 import '@mantine/core/styles.css';
 
@@ -34,7 +35,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         <MantineProvider theme={{ white: '#f7f4f3' }}>
           <SessionProvider session={session}>
-            <MuseumProvider>
+            <Providers>
               <Header />
               <div className="grid grid-cols-10 gap-0">
                 <div className="col-span-1 bg-red">
@@ -47,7 +48,7 @@ export default async function RootLayout({
                   {/* Right content here */}
                 </div>
               </div>
-            </MuseumProvider>
+            </Providers>
           </SessionProvider>
         </MantineProvider>
       </body>

@@ -88,19 +88,20 @@ model Museum {
 }
 
 model Booking {
-  id            Int         @id @default(autoincrement())
-  userId        String?     @map("user_id")
-  name          String
-  bookingMade   DateTime
-  visitInfo     DateTime
-  paymentType   PaymentType
-  paymentInfo   String?
-  totalVisitors Int
-  promo         Promo?      @relation(fields: [promoId], references: [id])
-  museum        Museum      @relation(fields: [museumId], references: [id])
-  user          User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  museumId      Int
-  promoId       Int?
+  id             Int         @id @default(autoincrement())
+  userId         String      @map("user_id")
+  name           String
+  bookingMade    DateTime
+  visitInfo      DateTime
+  paymentType    PaymentType @default(CARD)
+  paymentInfo    String?
+  employeeBooked Boolean     @default(false)
+  totalVisitors  Int
+  promo          Promo?      @relation(fields: [promoId], references: [id])
+  museum         Museum      @relation(fields: [museumId], references: [id])
+  user           User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  museumId       Int
+  promoId        Int?
 }
 
 model Promo {
