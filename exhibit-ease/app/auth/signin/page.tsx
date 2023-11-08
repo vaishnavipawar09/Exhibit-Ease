@@ -1,7 +1,7 @@
 'use client'
 
 import { SetStateAction, useEffect, useState } from 'react';
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation'
 import Link from 'next/link';
@@ -43,7 +43,8 @@ export function UniversalLogin({ isCustomer = true, error, setError }: Universal
     }
 
     const handleSocialLogin = async (provider: string) => {
-        await signIn(provider, { callbackUrl: callbackUrl });
+        await signIn(provider, { callbackUrl: callbackUrl, redirect: false });
+        router.push(callbackUrl);
     }
 
     const handleEmailLogin = async (e: React.FormEvent) => {
@@ -56,8 +57,18 @@ export function UniversalLogin({ isCustomer = true, error, setError }: Universal
             }
             setError(status.error);
             return;
+        } else {
+            const session = await getSession();
+            if (session?.user?.role === 'M') {
+                router.push('/admin');
+            } else if (session?.user?.role === 'E') {
+                router.push('/employee');
+            } else if (session?.user?.role === 'S') {
+                router.push('/support');
+            } else {
+                router.push(callbackUrl);
+            }
         }
-        router.push("/");
     }
 
     return (
