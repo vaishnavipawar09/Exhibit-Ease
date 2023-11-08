@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation'
 import Link from 'next/link';
-import { Alert, Notification } from '@mantine/core';
+import { Alert, Divider, Notification } from '@mantine/core';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 
 var fieldCSS: string = "border-black border w-full px-3 py-2 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:shadow-outline-gray focus:border-gray-300"
@@ -61,7 +61,7 @@ export function UniversalLogin({ isCustomer = true, error, setError }: Universal
     }
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 ">
             {/* <p className='text-center text-4xl font-bold'>{isCustomer ? "Customer Login" : "Non-Customer Login"}</p> */}
 
             {/* Error Display */}
@@ -95,7 +95,9 @@ export function UniversalLogin({ isCustomer = true, error, setError }: Universal
 
             {isCustomer && (
                 <>
-                    <div className="divider">or connect with</div>
+                    <p className='text-center text'>Forgot password? Reset <Link href={'resetpw'} className='text-blue-600 underline'>here</Link>.
+                    </p>
+                    <Divider my="sm" label="or connect with" labelPosition="center" />
                     <div className="grid card rounded-box place-items-center">
                         <button onClick={() => handleSocialLogin('google')} className={`${buttonCSS} bg-[#4285F4] hover:bg-[#2c0fab] focus:ring-[#2c0fab]`}>
                             <span>Login with Google</span>
@@ -103,8 +105,7 @@ export function UniversalLogin({ isCustomer = true, error, setError }: Universal
                         <button onClick={() => handleSocialLogin('facebook')} className={`${buttonCSS} bg-[#3b5998] hover:bg-[#2d4373] focus:ring-[#2d4373]`}>
                             <span>Login with Facebook</span>
                         </button>
-                        <p className='text-center text'>Need an account? Register
-                            <Link href={'register'} className='text-blue-600 underline'> here!</Link>
+                        <p className='text-center text'>Need an account? Register <Link href={'register'} className='text-blue-600 underline'>here</Link>!
                         </p>
                         <div className={`${error ? 'h-4' : 'h-0'}`}></div>
                     </div>
@@ -126,10 +127,10 @@ export default function LoginPage() {
         setIsCustomer(customer);
     }
     return (
-        <div className="flex flex-col justify-center items-center mt-12">
+        <div className="flex flex-col justify-center items-center mt-12 ">
             <div className="mb-4 flex items-center space-x-2">
                 <span className="font-medium text-gray-600">Login as:</span>
-                <div className="relative border rounded-md overflow-hidden">
+                <div className="relative border rounded-md overflow-hidden ">
                     <button
                         onClick={() => handleSwitchLoginType(true)}
                         className={`inset-y-0 left-0 focus:outline-none px-4 py-1 ${isCustomer ? 'bg-black text-white' : 'text-gray-600'}`}
@@ -144,7 +145,7 @@ export default function LoginPage() {
                     </button>
                 </div>
             </div>
-            <div className="w-96 px-10 py-10 rounded-md shadow-xl bg-white">
+            <div className="w-96 px-10 py-10 rounded-md shadow-xl bg-white border-gray-500 border">
                 <UniversalLogin isCustomer={isCustomer} error={error} setError={setError} />
             </div>
         </div>

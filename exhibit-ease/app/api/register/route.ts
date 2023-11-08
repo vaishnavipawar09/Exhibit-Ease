@@ -13,7 +13,7 @@ type PrismaError = {
 export async function POST(req: NextApiRequest, res: NextApiResponse) {
   let passedValue = await new Response(req.body).text();
   let valueToJson = JSON.parse(passedValue);
-  const { email, name, phoneNumber, password } = valueToJson;
+  const { email, name, resetCode, phoneNumber, password } = valueToJson;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -24,6 +24,7 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
         name,
         phoneNumber: phoneNumber || null,
         password: hashedPassword,
+        resetCode: resetCode || null,
         role: 'C',
       },
     });

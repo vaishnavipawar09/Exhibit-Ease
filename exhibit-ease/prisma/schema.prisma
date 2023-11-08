@@ -49,6 +49,7 @@ model User {
   phoneNumber   String?    @unique
   password      String?
   role          String     @default("C")
+  resetCode     String?    @db.VarChar(5)
   museumId      Int?
   museum        Museum?    @relation(fields: [museumId], references: [id])
   accounts      Account[]

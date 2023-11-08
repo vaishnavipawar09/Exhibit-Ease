@@ -33,7 +33,9 @@ export default function Page() {
         </Text>
       </div>
 
-      <Button variant="filled" size="md" color="rgba(166, 0, 0, 1)" component={Link} href='/search'>Search Museums</Button>
+      <Button variant="filled" size="md" color="rgba(166, 0, 0, 1)" component={Link} href={chosenCity ? `/search?cities=${chosenCity.toLowerCase().replaceAll(" ", "+")}` : '/search'} >
+        Search {chosenCity ? chosenCity : null} Museums
+      </Button>
 
     </div>
 
