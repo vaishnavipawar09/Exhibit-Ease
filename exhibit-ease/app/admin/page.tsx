@@ -2,6 +2,7 @@
 import { Tabs, rem } from '@mantine/core';
 
 import { Album, Adjustments, ChartInfographic, BuildingBank } from 'tabler-icons-react';
+import MuseumData from './components/MuseumData';
 
 export default function Page() {
   const iconStyle = { width: rem(16), height: rem(16) };
@@ -40,7 +41,7 @@ export default function Page() {
             Add/Delete promotions
           </Tabs.Panel>
           <Tabs.Panel value="museum" pt="xs">
-            Museum tab content
+            <MuseumData />
           </Tabs.Panel>
         </Tabs>
       </div>
