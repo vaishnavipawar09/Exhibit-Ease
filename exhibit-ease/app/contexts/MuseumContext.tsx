@@ -7,6 +7,7 @@ interface MuseumContextProps {
     museums: Museum[];
     cities: string[];
     states: string[];
+    prices: number[];
     fetchMuseums: () => void; // if you want to trigger data fetch from a component
     getMuseumsByField: <T extends keyof Museum>(field: T, value: Museum[T]) => Museum[];
     isLoading: boolean;
@@ -30,6 +31,7 @@ export const MuseumProvider: React.FC<MuseumProviderProps> = ({ children }) => {
     const [museums, setMuseums] = useState<Museum[]>([]);
     const [cities, setCities] = useState<string[]>([]);
     const [states, setStates] = useState<string[]>([]);
+    const [prices, setPrices] = useState<number[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const sortedMuseums = useMemo(() => {
@@ -45,6 +47,7 @@ export const MuseumProvider: React.FC<MuseumProviderProps> = ({ children }) => {
             setMuseums(data);
             setCities(Array.from(new Set(data.map((museum: Museum) => museum.city))));
             setStates(Array.from(new Set(data.map((museum: Museum) => museum.state))));
+            setPrices(Array.from(new Set(data.map((museum: Museum) => museum.cost))));
             setIsLoading(false); // Set isLoading to false when fetching ends
         } catch (error) {
             console.error("Error fetching museums:", error);
@@ -61,7 +64,7 @@ export const MuseumProvider: React.FC<MuseumProviderProps> = ({ children }) => {
         fetchMuseums(); // call it here
     }, []);
     return (
-        <MuseumContext.Provider value={{ museums: sortedMuseums, cities, states, fetchMuseums, getMuseumsByField, isLoading }}>
+        <MuseumContext.Provider value={{ museums: sortedMuseums, cities, states, prices, fetchMuseums, getMuseumsByField, isLoading }}>
             {children}
         </MuseumContext.Provider>
     );

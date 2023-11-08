@@ -11,7 +11,6 @@ import '@mantine/carousel/styles.css';
 import '@mantine/core/styles.css';
 
 
-
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -25,15 +24,19 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
 
+
+
   const session = await getServerSession();
 
   return (
-    <html lang="en" className='bg-[#f7f4f3]'>
+    // className='bg-[#f7f4f3]'
+    <html lang="en">
       <head>
         <ColorSchemeScript />
       </head>
       <body className={inter.className}>
-        <MantineProvider theme={{ white: '#f7f4f3' }}>
+        {/* theme={{ white: '#f7f4f3' }} */}
+        <MantineProvider >
           <SessionProvider session={session}>
             <Providers>
               <Header />

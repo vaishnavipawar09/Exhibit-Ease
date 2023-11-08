@@ -9,13 +9,18 @@ import { Button, Card, Text, Image, Loader } from "@mantine/core";
 
 interface MuseumSectionProps {
     title: string
-    type: string
+    type?: string
+    city?: string
 }
 
 export const MuseumSection = ({ query }: { query: MuseumSectionProps }) => {
     const { getMuseumsByField } = useMuseums();
-
-    var museums = getMuseumsByField('type', query.type as MuseumType).slice(0, 3);
+    let museums;
+    if (query.type) {
+        museums = getMuseumsByField('type', query.type as MuseumType).slice(0, 3);
+    } else {
+        museums = getMuseumsByField('city', query.city || '').slice(0, 3);
+    }
 
     return <main>
         <div className='mb-5 rounded-sm'>
