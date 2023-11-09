@@ -59,10 +59,10 @@ export default function BookingPage() {
                     </Tabs.List>
 
                     <Tabs.Panel value="first">
-                        <CreditCardForm ticketPrice={ticketPrice} promoDiscount={0} />
+                        <CreditCardForm ticketPrice={ticketPrice} />
                     </Tabs.Panel>
                     <Tabs.Panel value="second">
-                        <CashForm ticketPrice={ticketPrice} promoDiscount={0} />
+                        <CashForm ticketPrice={ticketPrice} />
                     </Tabs.Panel>
                 </Tabs>
 
@@ -76,7 +76,7 @@ export default function BookingPage() {
     </main>
 }
 
-function getTotalCost(numberOfTickets: number, ticketPrice: number, giftShop: boolean, cafe: boolean) {
+function getTotalCost(numberOfTickets: number, ticketPrice: number, giftShop: boolean, cafe: boolean, promoDiscount: number) {
     const taxRate = .08
     var cost = numberOfTickets * ticketPrice;
     if (giftShop == true) {
@@ -86,9 +86,14 @@ function getTotalCost(numberOfTickets: number, ticketPrice: number, giftShop: bo
         cost = cost + 5;
     }
     const tax = cost * taxRate;
-    var totalCost = cost + tax;
+    if (promoDiscount != 0) {
+        var totalCost = (cost * (1 - (promoDiscount / 100))) + tax
+    } else {
+        var totalCost = (cost + tax)
+    }
     return totalCost;
 }
+
 
 function getTotalTax(ticketPrice: number) {
     ticketPrice = ticketPrice * .08;
@@ -96,6 +101,9 @@ function getTotalTax(ticketPrice: number) {
 }
 
 function displayPriceSectionCard(cost: number, tax: number, promoDiscount: number, numberOfTickets: number, giftShop: boolean, cafe: boolean) {
+    if (promoDiscount == undefined) {
+        promoDiscount = 0;
+    }
     var ticketCost = cost * numberOfTickets
     if (giftShop == true) {
         ticketCost = ticketCost + 5;
@@ -115,11 +123,11 @@ function displayPriceSectionCard(cost: number, tax: number, promoDiscount: numbe
             </div>
             <div className="flex justify-between">
                 <span>Promo:</span>
-                <span>-${promoDiscount.toFixed(2)}</span>
+                <span>-{promoDiscount}%</span>
             </div>
             <div className="flex justify-between">
                 <span>Total Cost:</span>
-                <span>${getTotalCost(numberOfTickets, cost, giftShop, cafe).toFixed(2)}</span>
+                <span>${getTotalCost(numberOfTickets, cost, giftShop, cafe, promoDiscount).toFixed(2)}</span>
             </div>
         </div>
 
@@ -128,6 +136,9 @@ function displayPriceSectionCard(cost: number, tax: number, promoDiscount: numbe
 }
 
 function displayPriceSectionCash(cost: number, tax: number, promoDiscount: number, numberOfTickets: number, amountPaid: number, giftShop: boolean, cafe: boolean) {
+    if (promoDiscount == undefined) {
+        promoDiscount = 0;
+    }
     var ticketCost = cost * numberOfTickets
     if (giftShop == true) {
         ticketCost = ticketCost + 5;
@@ -135,7 +146,7 @@ function displayPriceSectionCash(cost: number, tax: number, promoDiscount: numbe
     if (cafe == true) {
         ticketCost = ticketCost + 5;
     }
-    const amountDue = amountPaid - getTotalCost(numberOfTickets, cost, cafe, giftShop)
+    const amountDue = amountPaid - getTotalCost(numberOfTickets, cost, giftShop, cafe, promoDiscount)
     return <>
         <div className="border-black border-[3px] my-4 p-4 max-w-md shadow-2xl">
             <div className="flex justify-between">
@@ -148,11 +159,11 @@ function displayPriceSectionCash(cost: number, tax: number, promoDiscount: numbe
             </div>
             <div className="flex justify-between">
                 <span>Promo:</span>
-                <span>-${promoDiscount.toFixed(2)}</span>
+                <span>-{promoDiscount}%</span>
             </div>
             <div className="flex justify-between">
                 <span>Total Cost:</span>
-                <span>${getTotalCost(numberOfTickets, cost, giftShop, cafe).toFixed(2)}</span>
+                <span>${getTotalCost(numberOfTickets, cost, giftShop, cafe, promoDiscount).toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
                 <span>Amount Paid:</span>
@@ -168,7 +179,7 @@ function displayPriceSectionCash(cost: number, tax: number, promoDiscount: numbe
     </>
 }
 
-export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: number, promoDiscount: number }) {
+export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
     // Initialize form with validation rules
     const { data: session } = useSession();
     const form = useForm({
@@ -181,6 +192,8 @@ export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: nu
             expDate: '',
             cvv: '',
             zipCode: '',
+            promo: '',
+            promoVal: 0,
         },
 
         validate: {
@@ -214,6 +227,14 @@ export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: nu
     const handleZipCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.replace(/\D/g, ''); // Remove non-digits
         form.setFieldValue('zipCode', value.slice(0, 5))
+    };
+
+    const handlePromo = async () => {
+        const promo = await fetch(`/api/promos?promoId=${form.values.promo}`)
+        if (promo.ok) {
+            const res = await promo.json();
+            form.setFieldValue('promoVal', res.discountPercent);
+        }
     };
 
     return (
@@ -294,16 +315,26 @@ export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: nu
                 />
 
                 <Group mt="md">
-                    <Button color='rgba(166, 0, 0, 1)' type="submit" style={{ margin: '1.25rem 0' }}>Confirm payment information</Button>
+                    <TextInput
+                        label="Add a promo code"
+                        {...form.getInputProps('promo')}
+                        styles={fieldStyles}
+                    />
+                    <Button
+                        color='rgba(166, 0, 0, 1)'
+                        style={{ margin: '1.25rem 0' }}
+                        onClick={(e) => handlePromo()}
+                    >Apply Promo
+                    </Button>
                 </Group>
-                {displayPriceSectionCard(ticketPrice, .08, promoDiscount, form.values.totalTickets, form.values.giftShop, form.values.cafe)}
+                {displayPriceSectionCard(ticketPrice, .08, form.values.promoVal, form.values.totalTickets, form.values.giftShop, form.values.cafe)}
             </form>
 
         </Box>
     );
 }
 
-export function CashForm({ ticketPrice, promoDiscount }: { ticketPrice: number, promoDiscount: number }) {
+export function CashForm({ ticketPrice }: { ticketPrice: number }) {
     // Initialize form with validation rules
     const { data: session } = useSession();
     const form = useForm({
@@ -313,9 +344,19 @@ export function CashForm({ ticketPrice, promoDiscount }: { ticketPrice: number, 
             giftShop: false,
             cafe: false,
             name: session ? session.user?.name : '',
-            email: session ? session.user?.email : ''
+            email: session ? session.user?.email : '',
+            promo: '',
+            promoVal: 0
         },
     });
+
+    const handlePromo = async () => {
+        const promo = await fetch(`/api/promos?promoId=${form.values.promo}`)
+        if (promo.ok) {
+            const res = await promo.json();
+            form.setFieldValue('promoVal', res.discountPercent);
+        }
+    };
 
 
     return (
@@ -365,7 +406,21 @@ export function CashForm({ ticketPrice, promoDiscount }: { ticketPrice: number, 
                     />
                 </div>
 
-                {displayPriceSectionCash(ticketPrice, .08, promoDiscount, form.values.totalTickets, form.values.amountPaid, form.values.giftShop, form.values.cafe)}
+                <Group mt="md">
+                    <TextInput
+                        label="Add a promo code"
+                        {...form.getInputProps('promo')}
+                        styles={fieldStyles}
+                    />
+                    <Button
+                        color='rgba(166, 0, 0, 1)'
+                        style={{ margin: '1.25rem 0' }}
+                        onClick={(e) => handlePromo()}
+                    >Apply Promo
+                    </Button>
+                </Group>
+
+                {displayPriceSectionCash(ticketPrice, .08, form.values.promoVal, form.values.totalTickets, form.values.amountPaid, form.values.giftShop, form.values.cafe)}
 
             </form>
 

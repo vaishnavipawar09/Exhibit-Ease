@@ -13,7 +13,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
     let museumId
     if (req.nextUrl.searchParams.get('museumId') != undefined) {
-        promoId = parseInt(req.nextUrl.searchParams.get('museumId') || '0', 10);
+        museumId = parseInt(req.nextUrl.searchParams.get('museumId') || '0', 10);
     }
 
     try {

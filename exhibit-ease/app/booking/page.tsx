@@ -76,7 +76,11 @@ function getTotalCost(numberOfTickets: number, ticketPrice: number, giftShop: bo
         cost = cost + 5;
     }
     const tax = cost * taxRate;
-    var totalCost = (cost + tax) * promoDiscount;
+    if (promoDiscount != 0) {
+        var totalCost = (cost * (1 - (promoDiscount / 100))) + tax
+    } else {
+        var totalCost = (cost + tax)
+    }
     return totalCost;
 }
 
@@ -85,9 +89,11 @@ function getTotalTax(ticketPrice: number) {
     return ticketPrice;
 }
 
-function displayPriceSection(cost: number, tax: number, promoDiscount: string, numberOfTickets: number, giftShop: boolean, cafe: boolean) {
+function displayPriceSection(cost: number, tax: number, promoDiscount: number, numberOfTickets: number, giftShop: boolean, cafe: boolean) {
+    if (promoDiscount == undefined) {
+        promoDiscount = 0;
+    }
     var ticketCost = cost * numberOfTickets
-
     if (giftShop == true) {
         ticketCost = ticketCost + 5;
     }
@@ -107,11 +113,11 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: string, n
             </div>
             <div className="flex justify-between">
                 <span>Promo:</span>
-                <span>-${promoDiscount}</span>
+                <span>-{promoDiscount}%</span>
             </div>
             <div className="flex justify-between">
                 <span>Total Cost:</span>
-                <span>${getTotalCost(numberOfTickets, cost, giftShop, cafe).toFixed(2)}</span>
+                <span>${getTotalCost(numberOfTickets, cost, giftShop, cafe, promoDiscount).toFixed(2)}</span>
             </div>
         </div>
 
@@ -133,7 +139,8 @@ export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
             expDate: '',
             cvv: '',
             zipCode: '',
-            promo: ''
+            promo: '',
+            promoVal: 0,
         },
 
         validate: {
@@ -167,6 +174,14 @@ export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
     const handleZipCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.replace(/\D/g, ''); // Remove non-digits
         form.setFieldValue('zipCode', value.slice(0, 5))
+    };
+
+    const handlePromo = async () => {
+        const promo = await fetch(`/api/promos?promoId=${form.values.promo}`)
+        if (promo.ok) {
+            const res = await promo.json();
+            form.setFieldValue('promoVal', res.discountPercent);
+        }
     };
 
     return (
@@ -260,12 +275,18 @@ export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                 <Group mt="md">
                     <TextInput
                         label="Add a promo code"
-                        {...form.getInputProps('zipcode')}
+                        {...form.getInputProps('promo')}
                         styles={fieldStyles}
                     />
+                    <Button
+                        color='rgba(166, 0, 0, 1)'
+                        style={{ margin: '1.25rem 0' }}
+                        onClick={(e) => handlePromo()}
+                    >Apply Promo
+                    </Button>
                 </Group>
 
-                {displayPriceSection(ticketPrice, .08, form.values.promo, form.values.totalTickets, form.values.giftShop, form.values.cafe)}
+                {displayPriceSection(ticketPrice, .08, form.values.promoVal, form.values.totalTickets, form.values.giftShop, form.values.cafe)}
             </form>
 
         </Box>
