@@ -21,6 +21,7 @@ export default function BookingPage() {
     const searchParams = useSearchParams();
     const { getMuseumsByField } = useMuseums();
     var museum = getMuseumsByField('id', parseInt(searchParams?.get("id") || "1"))[0];
+
     const ticketPrice = museum?.cost || 0;
 
     return <main className="h-screen">
@@ -53,7 +54,7 @@ export default function BookingPage() {
                     </div>
                 </Paper>
 
-                <CreditCardForm ticketPrice={ticketPrice} promoDiscount={0} />
+                <CreditCardForm ticketPrice={ticketPrice} />
 
 
                 <Button color='rgba(166, 0, 0, 1)' component={Link} href={`/confirmation?id=${museum?.id}`} style={{ margin: '1.25rem 0' }}>Complete Ticket Payment</Button>
@@ -65,7 +66,7 @@ export default function BookingPage() {
     </main>
 }
 
-function getTotalCost(numberOfTickets: number, ticketPrice: number, giftShop: boolean, cafe: boolean) {
+function getTotalCost(numberOfTickets: number, ticketPrice: number, giftShop: boolean, cafe: boolean, promoDiscount: number) {
     const taxRate = .08
     var cost = numberOfTickets * ticketPrice;
     if (giftShop == true) {
@@ -75,7 +76,7 @@ function getTotalCost(numberOfTickets: number, ticketPrice: number, giftShop: bo
         cost = cost + 5;
     }
     const tax = cost * taxRate;
-    var totalCost = cost + tax;
+    var totalCost = (cost + tax) * promoDiscount;
     return totalCost;
 }
 
@@ -84,14 +85,16 @@ function getTotalTax(ticketPrice: number) {
     return ticketPrice;
 }
 
-function displayPriceSection(cost: number, tax: number, promoDiscount: number, numberOfTickets: number, giftShop: boolean, cafe: boolean) {
+function displayPriceSection(cost: number, tax: number, promoDiscount: string, numberOfTickets: number, giftShop: boolean, cafe: boolean) {
     var ticketCost = cost * numberOfTickets
+
     if (giftShop == true) {
         ticketCost = ticketCost + 5;
     }
     if (cafe == true) {
         ticketCost = ticketCost + 5;
     }
+
     return <>
         <div className="border-black border-[3px] my-4 p-4 max-w-md shadow-2xl">
             <div className="flex justify-between">
@@ -104,7 +107,7 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
             </div>
             <div className="flex justify-between">
                 <span>Promo:</span>
-                <span>-${promoDiscount.toFixed(2)}</span>
+                <span>-${promoDiscount}</span>
             </div>
             <div className="flex justify-between">
                 <span>Total Cost:</span>
@@ -116,7 +119,7 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
     </>
 }
 
-export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: number, promoDiscount: number }) {
+export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
     // Initialize form with validation rules
     const { data: session } = useSession();
     const form = useForm({
@@ -130,6 +133,7 @@ export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: nu
             expDate: '',
             cvv: '',
             zipCode: '',
+            promo: ''
         },
 
         validate: {
@@ -254,9 +258,14 @@ export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: nu
                 />
 
                 <Group mt="md">
-                    <Button color='rgba(166, 0, 0, 1)' type="submit" style={{ margin: '1.25rem 0' }}>Confirm payment information</Button>
+                    <TextInput
+                        label="Add a promo code"
+                        {...form.getInputProps('zipcode')}
+                        styles={fieldStyles}
+                    />
                 </Group>
-                {displayPriceSection(ticketPrice, .08, promoDiscount, form.values.totalTickets, form.values.giftShop, form.values.cafe)}
+
+                {displayPriceSection(ticketPrice, .08, form.values.promo, form.values.totalTickets, form.values.giftShop, form.values.cafe)}
             </form>
 
         </Box>
