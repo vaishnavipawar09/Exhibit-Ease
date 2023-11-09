@@ -96,6 +96,7 @@ export const options: NextAuthOptions = {
     callbacks: {
         async session({ session, token }) {
             if (session.user) {
+                session.user.id = token.id;
                 session.user.name = token.name;
                 session.user.role = token.role
                 session.user.phoneNumber = token.phoneNumber
@@ -105,6 +106,7 @@ export const options: NextAuthOptions = {
         },
         async jwt({ token, user }) {
             if (user) {
+                token.id = user.id;
                 token.role = user.role;
                 token.phoneNumber = user.phoneNumber;
                 token.museumId = user.museumId;
