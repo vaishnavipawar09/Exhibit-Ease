@@ -3,6 +3,7 @@ import { DefaultSession, DefaultUser } from "next-auth";
 
 // common interface for JWT and Session
 interface IUser extends DefaultUser {
+    id: string;
     role?: string;
     phoneNumber?: string | null;
     museumId?: number | null;

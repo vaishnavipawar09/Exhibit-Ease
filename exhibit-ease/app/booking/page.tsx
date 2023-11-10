@@ -21,6 +21,7 @@ export default function BookingPage() {
     const searchParams = useSearchParams();
     const { getMuseumsByField } = useMuseums();
     var museum = getMuseumsByField('id', parseInt(searchParams?.get("id") || "1"))[0];
+
     const ticketPrice = museum?.cost || 0;
 
     return <main className="h-screen">
@@ -53,7 +54,7 @@ export default function BookingPage() {
                     </div>
                 </Paper>
 
-                <CreditCardForm ticketPrice={ticketPrice} promoDiscount={0} />
+                <CreditCardForm ticketPrice={ticketPrice} />
 
 
                 <Button color='rgba(166, 0, 0, 1)' component={Link} href={`/confirmation?id=${museum?.id}`} style={{ margin: '1.25rem 0' }}>Complete Ticket Payment</Button>
@@ -65,7 +66,7 @@ export default function BookingPage() {
     </main>
 }
 
-function getTotalCost(numberOfTickets: number, ticketPrice: number, giftShop: boolean, cafe: boolean) {
+function getTotalCost(numberOfTickets: number, ticketPrice: number, giftShop: boolean, cafe: boolean, promoDiscount: number) {
     const taxRate = .08
     var cost = numberOfTickets * ticketPrice;
     if (giftShop == true) {
@@ -75,7 +76,11 @@ function getTotalCost(numberOfTickets: number, ticketPrice: number, giftShop: bo
         cost = cost + 5;
     }
     const tax = cost * taxRate;
-    var totalCost = cost + tax;
+    if (promoDiscount != 0) {
+        var totalCost = (cost * (1 - (promoDiscount / 100))) + tax
+    } else {
+        var totalCost = (cost + tax)
+    }
     return totalCost;
 }
 
@@ -85,6 +90,9 @@ function getTotalTax(ticketPrice: number) {
 }
 
 function displayPriceSection(cost: number, tax: number, promoDiscount: number, numberOfTickets: number, giftShop: boolean, cafe: boolean) {
+    if (promoDiscount == undefined) {
+        promoDiscount = 0;
+    }
     var ticketCost = cost * numberOfTickets
     if (giftShop == true) {
         ticketCost = ticketCost + 5;
@@ -92,6 +100,7 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
     if (cafe == true) {
         ticketCost = ticketCost + 5;
     }
+
     return <>
         <div className="border-black border-[3px] my-4 p-4 max-w-md shadow-2xl">
             <div className="flex justify-between">
@@ -104,11 +113,11 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
             </div>
             <div className="flex justify-between">
                 <span>Promo:</span>
-                <span>-${promoDiscount.toFixed(2)}</span>
+                <span>-{promoDiscount}%</span>
             </div>
             <div className="flex justify-between">
                 <span>Total Cost:</span>
-                <span>${getTotalCost(numberOfTickets, cost, giftShop, cafe).toFixed(2)}</span>
+                <span>${getTotalCost(numberOfTickets, cost, giftShop, cafe, promoDiscount).toFixed(2)}</span>
             </div>
         </div>
 
@@ -116,7 +125,7 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
     </>
 }
 
-export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: number, promoDiscount: number }) {
+export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
     // Initialize form with validation rules
     const { data: session } = useSession();
     const form = useForm({
@@ -130,6 +139,8 @@ export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: nu
             expDate: '',
             cvv: '',
             zipCode: '',
+            promo: '',
+            promoVal: 0,
         },
 
         validate: {
@@ -163,6 +174,14 @@ export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: nu
     const handleZipCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.replace(/\D/g, ''); // Remove non-digits
         form.setFieldValue('zipCode', value.slice(0, 5))
+    };
+
+    const handlePromo = async () => {
+        const promo = await fetch(`/api/promos?promoId=${form.values.promo}`)
+        if (promo.ok) {
+            const res = await promo.json();
+            form.setFieldValue('promoVal', res.discountPercent);
+        }
     };
 
     return (
@@ -254,9 +273,20 @@ export function CreditCardForm({ ticketPrice, promoDiscount }: { ticketPrice: nu
                 />
 
                 <Group mt="md">
-                    <Button color='rgba(166, 0, 0, 1)' type="submit" style={{ margin: '1.25rem 0' }}>Confirm payment information</Button>
+                    <TextInput
+                        label="Add a promo code"
+                        {...form.getInputProps('promo')}
+                        styles={fieldStyles}
+                    />
+                    <Button
+                        color='rgba(166, 0, 0, 1)'
+                        style={{ margin: '1.25rem 0' }}
+                        onClick={(e) => handlePromo()}
+                    >Apply Promo
+                    </Button>
                 </Group>
-                {displayPriceSection(ticketPrice, .08, promoDiscount, form.values.totalTickets, form.values.giftShop, form.values.cafe)}
+
+                {displayPriceSection(ticketPrice, .08, form.values.promoVal, form.values.totalTickets, form.values.giftShop, form.values.cafe)}
             </form>
 
         </Box>

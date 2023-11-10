@@ -7,12 +7,37 @@ import Link from 'next/link';
 import { Image, Loader, Button, Text, Paper, Container } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import { ArrowSmallLeftIcon, ArrowSmallRightIcon } from '@heroicons/react/24/outline';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
 export default function Page({ params }: {
   params: { id: string }
 }) {
   const { getMuseumsByField } = useMuseums();
+  const [favorited, setFavorited] = useState(false);
   var museum = getMuseumsByField('id', parseInt(params.id))[0];
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    async function fetchMuseums() {
+      try {
+        if (session) {
+          console.log(session);
+          const res = await fetch(`/api/favorites?userId=${session.user?.id}&museumId=${params.id}`);
+          if (!res.ok) {
+            throw new Error(`Fetch request failed with status: ${res.status}`);
+          }
+          const data = await res.json();
+          console.log(data);
+        }
+      } catch (error) {
+        console.error("Error fetching museums:", error);
+        // Handle the error, e.g., show an error message to the user
+      }
+    }
+
+    fetchMuseums();
+  }, [favorited])
 
   const googleMapsLink: string = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(museum?.address || '') + '+' + encodeURIComponent(museum?.city || '') + '+' + encodeURIComponent(museum?.state || '')
   return <main className="h-screen">
