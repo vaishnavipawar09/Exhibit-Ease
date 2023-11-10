@@ -6,9 +6,10 @@ import { getServerSession } from 'next-auth';
 import SessionProvider from './components/SessionProvider';
 import { MantineProvider, ColorSchemeScript } from '@mantine/core';
 import Providers from './contexts/Providers';
-
+import { options } from "@/app/api/auth/[...nextauth]/options";
 import '@mantine/carousel/styles.css';
 import '@mantine/core/styles.css';
+import { NextAuthProvider } from './contexts/nextAuthProvider';
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -26,7 +27,7 @@ export default async function RootLayout({
 
 
 
-  const session = await getServerSession();
+  const session = await getServerSession(options);
 
   return (
     // className='bg-[#f7f4f3]'
@@ -37,7 +38,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         {/* theme={{ white: '#f7f4f3' }} */}
         <MantineProvider >
-          <SessionProvider session={session}>
+          <NextAuthProvider session={session}>
             <Providers>
               <Header />
               <div className="grid grid-cols-10 gap-0">
@@ -52,7 +53,7 @@ export default async function RootLayout({
                 </div>
               </div>
             </Providers>
-          </SessionProvider>
+          </NextAuthProvider>
         </MantineProvider>
       </body>
     </html>

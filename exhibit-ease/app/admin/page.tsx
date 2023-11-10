@@ -13,7 +13,7 @@ export default function Page() {
       <br />
       <div className='flex'>
         <Tabs variant="outline" orientation="vertical" defaultValue="museum">
-          <Tabs.List>
+          <Tabs.List mr="lg">
             <Tabs.Tab value="museum" leftSection={<BuildingBank style={iconStyle} />}>
               Museum
             </Tabs.Tab>
