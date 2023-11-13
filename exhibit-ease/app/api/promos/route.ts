@@ -24,17 +24,23 @@ export async function GET(req: NextRequest, res: NextResponse) {
                 },
             });
             return NextResponse.json(promo);
-        } else {
+        } else if (museumId) {
             const promo = await prisma.promo.findMany({
                 where: {
                     museumId: museumId,
                 },
             });
             return NextResponse.json(promo);
+        } else {
+            const promo = await prisma.promo.findMany({
+
+            });
+            return NextResponse.json(promo);
         }
 
 
     } catch (error) {
+        console.log(error);
         return NextResponse.error();
     }
 }

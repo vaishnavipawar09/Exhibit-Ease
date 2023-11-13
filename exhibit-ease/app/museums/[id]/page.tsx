@@ -4,31 +4,31 @@ import { useMuseums } from '@/app/contexts/MuseumContext';
 import { prisma } from '@/lib/prisma';
 // import Image from "next/image";
 import Link from 'next/link';
-import { Image, Loader, Button, Text, Paper, Container } from '@mantine/core';
+import { Image, Loader, Button, Text, Paper, Container, Group } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import { ArrowSmallLeftIcon, ArrowSmallRightIcon } from '@heroicons/react/24/outline';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import { Heart } from 'tabler-icons-react';
 
 export default function Page({ params }: {
   params: { id: string }
 }) {
   const { getMuseumsByField } = useMuseums();
-  const [favorited, setFavorited] = useState(false);
+  const [favorited, setFavorited] = useState<Boolean>(false);
   var museum = getMuseumsByField('id', parseInt(params.id))[0];
   const { data: session } = useSession();
 
   useEffect(() => {
     async function fetchMuseums() {
       try {
-        if (session) {
-          console.log(session);
+        if (session?.user?.id) {
           const res = await fetch(`/api/favorites?userId=${session.user?.id}&museumId=${params.id}`);
           if (!res.ok) {
             throw new Error(`Fetch request failed with status: ${res.status}`);
           }
           const data = await res.json();
-          console.log(data);
+          setFavorited(data);
         }
       } catch (error) {
         console.error("Error fetching museums:", error);
@@ -37,7 +37,7 @@ export default function Page({ params }: {
     }
 
     fetchMuseums();
-  }, [favorited])
+  }, [favorited, session])
 
   const googleMapsLink: string = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(museum?.address || '') + '+' + encodeURIComponent(museum?.city || '') + '+' + encodeURIComponent(museum?.state || '')
   return <main className="h-screen">
@@ -72,9 +72,15 @@ export default function Page({ params }: {
                   rel="noopener noreferrer"
                   style={{ padding: '0', margin: '0' }} color='black'>{museum?.address}, {museum?.city}, {museum?.state}
                 </Button>
-                <Button component={Link} href={`/booking?id=${museum?.id}`} size="md" variant="filled" color="#a60000">
-                  Book Tickets
-                </Button>
+                <Group>
+                  <Button component={Link} href={`/booking?id=${museum?.id}`} size="md" variant="filled" color="#a60000">
+                    Book Tickets
+                  </Button>
+                  {session ? <>
+                    {favorited ? <Heart onClick={() => handleFavorite(session.user?.id || '', parseInt(params.id), "DELETE")} size={45} className="fill-red-500 cursor-pointer" />
+                      : <Heart onClick={() => handleFavorite(session.user?.id || '', parseInt(params.id), "ADD")} size={45} className="cursor-pointer" />}
+                  </> : <></>}
+                </Group>
               </div>
             </div>
           </div>
@@ -117,4 +123,41 @@ export default function Page({ params }: {
       <Loader />
     </div>}
   </main>
+}
+
+async function handleFavorite(userId: string, museumId: number, action: string) {
+
+  if (userId == '') {
+    return;
+  }
+
+  if (action == "DELETE") {
+    const response = await fetch('/api/favorites', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId: userId, museumId: museumId }),
+    });
+    if (response.ok) {
+      window.location.reload();
+    } else {
+      const errorData = await response.json();
+
+    }
+  } else if (action == "ADD") {
+    const response = await fetch('/api/favorites', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId: userId, museumId: museumId }),
+    });
+    if (response.ok) {
+      window.location.reload();
+    } else {
+      const errorData = await response.json();
+
+    }
+  }
 }
