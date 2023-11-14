@@ -29,6 +29,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
                 where: {
                     museumId: museumId,
                 },
+                orderBy: { id: 'asc' }
             });
             return NextResponse.json(promo);
         } else {
@@ -39,6 +40,33 @@ export async function GET(req: NextRequest, res: NextResponse) {
         }
 
 
+    } catch (error) {
+        console.log(error);
+        return NextResponse.error();
+    }
+}
+
+export async function POST(req: NextRequest, res: NextResponse) {
+    let passedValue = await new Response(req.body).text();
+    let valueToJson = JSON.parse(passedValue);
+    try {
+        const promo = await prisma.promo.upsert({
+            where: {
+                id: valueToJson.id,
+            },
+            update: {
+                promoName: valueToJson.promoName,
+                discountPercent: parseFloat(valueToJson.discountPercent),
+                active: valueToJson.active,
+            },
+            create: {
+                museumId: valueToJson.museumId,
+                promoName: valueToJson.promoName,
+                discountPercent: parseFloat(valueToJson.discountPercent),
+                active: valueToJson.active,
+            },
+        });
+        return NextResponse.json(promo);
     } catch (error) {
         console.log(error);
         return NextResponse.error();
