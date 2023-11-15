@@ -1,95 +1,201 @@
-"use client";
+'use client';
 
-import React, { useState } from 'react';
-import Link from "next/link";
-import Image from "next/image";
-import { useRouter, usePathname } from "next/navigation";
-import { signIn, signOut, useSession } from "next-auth/react";
-import logo_no_background from "../images/logo_no_background.png";
-import Avatar from "boring-avatars";
+import {
+  Group,
+  Button,
+  Divider,
+  Box,
+  Burger,
+  Drawer,
+  ScrollArea,
+  rem,
+  Avatar as MantineAvatar,
+  ActionIcon,
+  Menu,
+  Text,
+  List
+} from '@mantine/core';
+import Avatar from 'boring-avatars';
+import { useDisclosure } from '@mantine/hooks';
+import Image from 'next/image';
+import classes from './Header.module.css';
+import logo_no_background from '../images/logo_no_background.png';
+import { signIn, signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Bell } from 'tabler-icons-react';
+import { Notification } from '@prisma/client';
 
-function AuthSection() {
+
+export default function Header() {
+  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
+  const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
+  const router = useRouter()
   const { data: session } = useSession();
-  const [isOpen, setIsOpen] = useState(false);
+  const [userMenuOpened, setUserMenuOpened] = useState(false);
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+  return (
+    <Box>
+      <header className={classes.header}>
+        <Group justify="space-between" h="100%">
+          <Image
+            width={85}
+            height={85}
+            src={logo_no_background}
+            alt="Logo"
+            className="filter invert"
+          />
+
+
+          <Group h="100%" gap={0} visibleFrom="sm">
+            <a href="/" className={classes.link}>
+              Home
+            </a>
+
+            <a href="/search" className={classes.link}>
+              Search
+            </a>
+          </Group>
+
+          {session ?
+            <Group>
+              {session.user?.role == 'C' ? <NotificationPanel /> : <></>}
+              <Menu
+                width={260}
+                position="bottom-end"
+                transitionProps={{ transition: 'pop-top-right' }}
+                onClose={() => setUserMenuOpened(false)}
+                onOpen={() => setUserMenuOpened(true)}
+                withinPortal
+              >
+                <Menu.Target>
+                  <MantineAvatar component={ActionIcon} size="lg"
+                    className="hover:bg-sky-700 cursor-pointer">
+                    <Avatar
+                      name={session?.user?.name || ''}
+                      variant="beam"
+                      colors={["#92A1C6", "#146A7C", "#F0AB3D", "#C271B4", "#C20D90"]}
+                    />
+                  </MantineAvatar>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    onClick={() => router.push(
+                      session.user?.role === 'C' ? '/dashboard' :
+                        session.user?.role === 'M' ? '/admin' : '/employee'
+                    )}
+                  >
+                    Dashboard
+                  </Menu.Item>
+                  <Menu.Item
+                    onClick={() => signOut()}
+                  >
+                    Logout
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            </Group>
+            : <Group visibleFrom="sm">
+              <Button onClick={() => { signIn() }} variant="default">Log in</Button>
+              <Button onClick={() => { router.push('/auth/register') }} >Sign up</Button>
+            </Group>}
+
+          <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
+        </Group>
+      </header>
+
+      <Drawer
+        opened={drawerOpened}
+        onClose={closeDrawer}
+        size="100%"
+        padding="md"
+        title="Navigation"
+        hiddenFrom="sm"
+        zIndex={1000000}
+      >
+        <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
+          <Divider my="sm" />
+
+          <a href="/" className={classes.link}>
+            Home
+          </a>
+
+          <a href="/search" className={classes.link}>
+            Search
+          </a>
+
+          <Divider my="sm" />
+
+          <Group justify="center" grow pb="xl" px="md">
+            <Button onClick={() => { signIn() }} variant="default">Log in</Button>
+            <Button onClick={() => { router.push('/auth/register') }} >Sign up</Button>
+          </Group>
+        </ScrollArea>
+      </Drawer>
+    </Box>
+  );
+}
+
+function NotificationPanel({ }: {}) {
+  const [opened, { open, close }] = useDisclosure(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { data: session } = useSession();
+
+  const fetchNotifications = async () => {
+    if (session?.user?.id) {
+      try {
+        const response = await fetch(`/api/notifications?userId=${session.user.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setNotifications(data);
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    }
   };
 
-  if (session) {
-    return (
-      <>
-        <div onClick={toggleDropdown} className="relative inline-block">
-          <button className="dropdown transition ease-in-out delay-150 duration-300 border-4 border-white rounded-full hover:border-gray-300 hover:scale-110">
-            <Avatar
-              size={38}
-              name={session?.user?.name || ''}
-              variant="beam"
-              colors={["#92A1C6", "#146A7C", "#F0AB3D", "#C271B4", "#C20D90"]}
-            />
-          </button>
-        </div>
-        {isOpen && (
-          <div className="dropdown-menu z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 absolute mt-2">
-            <ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
-              <li>
-                <a href="/dashboard" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
-              </li>
-              <li>
-                <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</a>
-              </li>
-              <li>
-                <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Earnings</a>
-              </li>
-              <li>
-                <a onClick={() => signOut()} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</a>
-              </li>
-            </ul>
-          </div>
-        )}
-      </>
-    )
-  }
+  const markAsRead = async (notificationId: number) => {
+    console.log(notificationId);
+    try {
+      await fetch('/api/notifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: notificationId, read: true }),
+      });
+      // Update local state to reflect the read status
+      setNotifications(notifications.map(n => n.id === notificationId ? { ...n, read: true } : n));
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 60000); // Refetch every 60 seconds
+
+    return () => clearInterval(interval); // Clear interval on component unmount
+  }, [session?.user?.id]);
+
   return (
     <>
-      <button
-        onClick={() => signIn()}
-        className="mt-4 inline-block rounded border border-white px-4 py-2 text-sm leading-none text-white hover:border-transparent hover:bg-white hover:text-teal-500 lg:mt-0"
-      >
-        Sign In
-      </button>
+      <ActionIcon onClick={open} variant="transparent" radius="xs" aria-label="Settings">
+        <Bell size={25} strokeWidth={2} color={'black'} />
+      </ActionIcon>
+      <Drawer opened={opened} onClose={close} title="Notifications" size="md">
+        <List spacing="sm" size="sm">
+          {notifications.map(notification => (
+            <List.Item
+              key={notification.id}
+              onClick={() => !notification.read && markAsRead(notification.id)}
+            >
+              <Text c={notification.read ? 'dimmed' : 'dark'}>
+                {notification.message}
+              </Text>
+            </List.Item>
+          ))}
+        </List>
+      </Drawer>
     </>
-  )
+  );
 }
-const Header: React.FC = () => {
-  return <nav>
-    <div className="flex bg-[#661900] max-w mx-auto items-center">
-      <div className="flex-1 flex justify-left ml-28 mr-auto">
-        <Link
-          href="\"
-          className="mr-4 mt-4 block text-white lg:mt-0 lg:inline-block"
-        >
-          Home
-        </Link>
-        <Link
-          href="\about"
-          className="mr-4 mt-4 block text-white lg:mt-0 lg:inline-block"
-        >
-          About
-        </Link>
-      </div>
-      <div className="mx-12">
-        <div className="mr-6 flex flex-shrink-0 items-center text-white py-2">
-          <Image src={logo_no_background} width={85} height={85} alt="Exhibit Ease Icon" className="pr-5" />
-        </div>
-      </div>
-      <div className="flex-1 flex justify-end ml-auto mr-36 items-center">
-        <div>
-          <AuthSection />
-        </div>
-      </div>
-    </div>
-  </nav>
-}
-
-export default Header;

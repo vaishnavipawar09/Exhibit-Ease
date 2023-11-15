@@ -40,22 +40,23 @@ model Session {
 }
 
 model User {
-  id            String     @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
-  email         String?    @unique
+  email         String?        @unique
   emailVerified DateTime?
   image         String?
   payment       String?
-  phoneNumber   String?    @unique
+  phoneNumber   String?        @unique
   password      String?
-  role          String     @default("C")
-  resetCode     String?    @db.VarChar(5)
+  role          String         @default("C")
+  resetCode     String?        @db.VarChar(5)
   museumId      Int?
-  museum        Museum?    @relation(fields: [museumId], references: [id])
+  museum        Museum?        @relation(fields: [museumId], references: [id])
   accounts      Account[]
   sessions      Session[]
   Booking       Booking[]
   Favorite      Favorite[]
+  Notification  Notification[]
 }
 
 model VerificationToken {
@@ -68,24 +69,25 @@ model VerificationToken {
 }
 
 model Museum {
-  id          Int         @id @default(autoincrement())
-  name        String
-  description String?
-  main_image  String?
-  bg_image    String?
-  cost        Float
-  address     String
-  city        String
-  state       String
-  zip         Int
-  type        MuseumType
-  openHour    DateTime
-  closeHour   DateTime
-  Booking     Booking[]
-  Promo       Promo[]
-  Favorite    Favorite[]
-  Slideshow   Slideshow[]
-  User        User[]
+  id           Int            @id @default(autoincrement())
+  name         String
+  description  String?
+  main_image   String?
+  bg_image     String?
+  cost         Float
+  address      String
+  city         String
+  state        String
+  zip          Int
+  type         MuseumType
+  openHour     DateTime
+  closeHour    DateTime
+  Booking      Booking[]
+  Promo        Promo[]
+  Favorite     Favorite[]
+  Slideshow    Slideshow[]
+  User         User[]
+  Notification Notification[]
 }
 
 model Booking {
@@ -106,13 +108,14 @@ model Booking {
 }
 
 model Promo {
-  id              Int       @id @default(autoincrement())
+  id              Int            @id @default(autoincrement())
   promoName       String
   active          Boolean
   museumId        Int
   discountPercent Float
-  museum          Museum    @relation(fields: [museumId], references: [id])
+  museum          Museum         @relation(fields: [museumId], references: [id])
   Booking         Booking[]
+  Notification    Notification[]
 }
 
 model Favorite {
@@ -120,6 +123,18 @@ model Favorite {
   user     User   @relation(fields: [userId], references: [id])
   museum   Museum @relation(fields: [museumId], references: [id])
   userId   String
+  museumId Int
+}
+
+model Notification {
+  id       Int     @id @default(autoincrement())
+  user     User    @relation(fields: [userId], references: [id])
+  promo    Promo   @relation(fields: [promoId], references: [id])
+  museum   Museum  @relation(fields: [museumId], references: [id])
+  message  String
+  read     Boolean @default(false)
+  userId   String
+  promoId  Int
   museumId Int
 }
 

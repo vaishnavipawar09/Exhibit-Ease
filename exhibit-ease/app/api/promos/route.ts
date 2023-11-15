@@ -66,6 +66,28 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 active: valueToJson.active,
             },
         });
+
+        if (valueToJson.id == 0) {
+            const favorites = await prisma.favorite.findMany({
+                where: {
+                    museumId: promo.museumId,
+                },
+                select: {
+                    userId: true,
+                },
+            });
+
+            // Create a notification for each user
+            const notifications = favorites.map(fav => ({
+                userId: fav.userId,
+                promoId: promo.id,
+                message: `New promo available: ${promo.promoName} for ${(promo.discountPercent * 100).toFixed(1)}% off at ${valueToJson.museumName}!`,
+            }));
+
+            await prisma.notification.createMany({
+                data: notifications,
+            });
+        }
         return NextResponse.json(promo);
     } catch (error) {
         console.log(error);
