@@ -13,7 +13,9 @@ import {
   ActionIcon,
   Menu,
   Text,
-  List
+  List,
+  Card,
+  Notification as MantineNotification,
 } from '@mantine/core';
 import Avatar from 'boring-avatars';
 import { useDisclosure } from '@mantine/hooks';
@@ -23,7 +25,7 @@ import logo_no_background from '../images/logo_no_background.png';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Bell } from 'tabler-icons-react';
+import { ArrowRight, Bell } from 'tabler-icons-react';
 import { Notification } from '@prisma/client';
 
 
@@ -140,6 +142,8 @@ function NotificationPanel({ }: {}) {
   const [opened, { open, close }] = useDisclosure(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { data: session } = useSession();
+  const router = useRouter();
+  const [hasUnread, setHasUnread] = useState(false);
 
   const fetchNotifications = async () => {
     if (session?.user?.id) {
@@ -148,6 +152,7 @@ function NotificationPanel({ }: {}) {
         if (response.ok) {
           const data = await response.json();
           setNotifications(data);
+          setHasUnread(data.some((notification: Notification) => !notification.read));
         }
       } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -156,15 +161,20 @@ function NotificationPanel({ }: {}) {
   };
 
   const markAsRead = async (notificationId: number) => {
-    console.log(notificationId);
     try {
       await fetch('/api/notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: notificationId, read: true }),
       });
+
+      const updatedNotifications = notifications.map(n =>
+        n.id === notificationId ? { ...n, read: true } : n
+      );
       // Update local state to reflect the read status
-      setNotifications(notifications.map(n => n.id === notificationId ? { ...n, read: true } : n));
+      setNotifications(updatedNotifications);
+      const allRead = updatedNotifications.every(n => n.read);
+      setHasUnread(!allRead);
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
@@ -181,17 +191,27 @@ function NotificationPanel({ }: {}) {
     <>
       <ActionIcon onClick={open} variant="transparent" radius="xs" aria-label="Settings">
         <Bell size={25} strokeWidth={2} color={'black'} />
+        {hasUnread && <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>}
       </ActionIcon>
       <Drawer opened={opened} onClose={close} title="Notifications" size="md">
         <List spacing="sm" size="sm">
           {notifications.map(notification => (
             <List.Item
               key={notification.id}
-              onClick={() => !notification.read && markAsRead(notification.id)}
-            >
-              <Text c={notification.read ? 'dimmed' : 'dark'}>
-                {notification.message}
-              </Text>
+              onClick={() => !notification.read && markAsRead(notification.id)}>
+              <MantineNotification
+                withBorder
+                withCloseButton={false}
+                color={notification.read ? "gray" : "blue"}
+                className="cursor-pointer"
+                styles={{ root: { backgroundColor: `${notification.read ? "transparent" : "#cff1fc"}` } }}>
+                <Group wrap="nowrap" gap={0}>
+                  {notification.message}
+                  <ActionIcon onClick={() => { router.push(`/booking?museumId=${notification.museumId}&promoId=${notification.promoId}`); close(); }}>
+                    <ArrowRight size={25} strokeWidth={2} color={'white'} />
+                  </ActionIcon>
+                </Group>
+              </MantineNotification>
             </List.Item>
           ))}
         </List>

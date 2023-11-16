@@ -116,7 +116,7 @@ function LoadPromotion() {
 
             <Modal opened={opened} onClose={() => { setCurrEditingPromo(null); close(); }} title={`${currEditingPromo ? "Edit Promotion" : "Add Promotion"}`}>
                 <form onSubmit={form.onSubmit((values) => { handleSubmit(values) })}>
-                    <TextInput label="Promo Name" {...form.getInputProps('promoName')} />
+                    <TextInput data-autofocus label="Promo Name" {...form.getInputProps('promoName')} />
                     <NumberInput clampBehavior="strict"
                         min={0} max={1} allowDecimal={true} decimalScale={3} label="Discount Percent (value must be: 0.000 <= value <= 1"  {...form.getInputProps('discountPercent')} />
                     <Switch mt="sm" labelPosition="left" label="Active" checked={form.values.active} onClick={() => { form.setFieldValue('active', !currEditingPromo?.active) }} {...form.getInputProps('active')} />

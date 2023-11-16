@@ -76,7 +76,7 @@ export default function Page({ params }: {
                   <Button component={Link} href={`/booking?id=${museum?.id}`} size="md" variant="filled" color="#a60000">
                     Book Tickets
                   </Button>
-                  {session ? <>
+                  {session && session.user?.role == 'C' ? <>
                     {favorited ? <Heart onClick={() => handleFavorite(session.user?.id || '', parseInt(params.id), "DELETE")} size={45} className="fill-red-500 cursor-pointer" />
                       : <Heart onClick={() => handleFavorite(session.user?.id || '', parseInt(params.id), "ADD")} size={45} className="cursor-pointer" />}
                   </> : <></>}

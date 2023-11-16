@@ -30,7 +30,6 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
 export async function POST(req: NextRequest, res: NextResponse) {
     let passedValue = await new Response(req.body).text();
-    console.log(passedValue);
     let valueToJson = JSON.parse(passedValue);
     try {
         const promo = await prisma.notification.update({

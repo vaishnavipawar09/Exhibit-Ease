@@ -82,6 +82,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 userId: fav.userId,
                 promoId: promo.id,
                 message: `New promo available: ${promo.promoName} for ${(promo.discountPercent * 100).toFixed(1)}% off at ${valueToJson.museumName}!`,
+                museumId: promo.museumId,
             }));
 
             await prisma.notification.createMany({
