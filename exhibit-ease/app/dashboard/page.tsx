@@ -16,7 +16,7 @@ export default function Page() {
       <p>Hi, {session.user?.name || session.user?.email}!</p>
       <p>Your email is {session.user?.email}.</p>
       <div className='flex mt-4'>
-        <Tabs variant="outline" orientation="vertical" defaultValue="museum">
+        <Tabs variant="outline" orientation="vertical" defaultValue="favorites">
           <Tabs.List mr="lg">
             <Tabs.Tab value="favorites" leftSection={<Heart style={iconStyle} />}>
               Your Favorites
