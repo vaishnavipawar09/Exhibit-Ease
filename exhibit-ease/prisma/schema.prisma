@@ -91,13 +91,14 @@ model Museum {
 }
 
 model Booking {
-  id             Int         @id @default(autoincrement())
+  id             String      @id @default(cuid())
   userId         String      @map("user_id")
   name           String
   bookingMade    DateTime
   visitInfo      DateTime
   paymentType    PaymentType @default(CARD)
   paymentInfo    String?
+  totalCost      Float
   employeeBooked Boolean     @default(false)
   totalVisitors  Int
   promo          Promo?      @relation(fields: [promoId], references: [id])
