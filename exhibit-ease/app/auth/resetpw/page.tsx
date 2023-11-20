@@ -53,6 +53,7 @@ export default function Page() {
                             redirect: false,
                             role: 'C'
                         });
+                        router.refresh();
                         router.push('/');
                     }
                 } else {

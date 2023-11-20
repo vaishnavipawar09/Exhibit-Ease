@@ -31,6 +31,7 @@ export default function Page() {
 
             if (response.ok) {
                 const status = await signIn('credentials', { email: formData.email, password: formData.password, callbackUrl: '/', redirect: false, role: 'C' })
+                router.refresh();
                 router.push('/');
             } else {
                 const errorData = await response.json();

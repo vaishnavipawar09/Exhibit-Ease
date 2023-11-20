@@ -59,6 +59,7 @@ function UniversalLogin({ isCustomer = true, error, setError }: UniversalLoginPr
             return;
         } else {
             const session = await getSession();
+            router.refresh();
             if (session?.user?.role === 'M') {
                 router.push('/admin');
             } else if (session?.user?.role === 'E') {
