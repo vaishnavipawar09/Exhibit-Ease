@@ -99,7 +99,7 @@ export default function Page() {
             </Group>
             : <Group visibleFrom="sm">
               <Button onClick={() => { signIn() }} variant="default">Log in</Button>
-              <Button onClick={() => { router.push('/auth/register') }} variant="filled" >Sign up</Button>
+              <Button onClick={() => { router.push('/auth/register') }} variant="light">Sign up</Button>
             </Group>}
 
           <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />

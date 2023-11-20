@@ -73,7 +73,7 @@ export default function Page({ params }: {
                   style={{ padding: '0', margin: '0' }} color='black'>{museum?.address}, {museum?.city}, {museum?.state}
                 </Button>
                 <Group>
-                  <Button component={Link} href={`/booking?id=${museum?.id}`} size="md" variant="filled" color="#a60000">
+                  <Button component={Link} prefetch={false} href={`/booking?id=${museum?.id}`} size="md" variant="filled" color="#a60000">
                     Book Tickets
                   </Button>
                   {session && session.user?.role == 'C' ? <>
