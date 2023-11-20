@@ -1,5 +1,4 @@
 import { prisma } from '@/lib/prisma';
-import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest, res: NextResponse) {
@@ -42,7 +41,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     }
 }
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
+export async function POST(req: NextRequest, res: NextResponse) {
     let passedValue = await new Response(req.body).text();
     let valueToJson = JSON.parse(passedValue);
     const { userId, museumId } = valueToJson;
@@ -63,7 +62,7 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
     }
 };
 
-export async function DELETE(req: NextApiRequest, res: NextApiResponse) {
+export async function DELETE(req: NextRequest, res: NextResponse) {
     let passedValue = await new Response(req.body).text();
     let valueToJson = JSON.parse(passedValue);
     const { userId, museumId } = valueToJson;
