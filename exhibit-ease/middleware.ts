@@ -12,7 +12,6 @@ export default withAuth(
             return NextResponse.redirect(redirectUrl);
         }
         if (req.nextUrl.pathname.startsWith("/booking") && req.nextauth.token?.role !== "C") {
-            console.log(req.nextauth.token?.role)
             const redirectUrl = `${req.nextUrl.origin}/not-found?message=${encodeURIComponent("Customer access only.")}`;
             return NextResponse.redirect(redirectUrl);
         }
@@ -25,8 +24,7 @@ export default withAuth(
     {
         callbacks: {
             authorized: (params) => {
-                let { token } = params;
-                return !!token;
+                return true;
             },
         },
     }
