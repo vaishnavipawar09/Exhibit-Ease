@@ -36,10 +36,10 @@ export const options: NextAuthOptions = {
             clientSecret: process.env.FACEBOOK_CLIENT_SECRET ?? '',
             profile(profile) {
                 return {
-                    id: profile.sub,
+                    id: profile.id,
                     name: profile.name,
                     email: profile.email,
-                    image: profile.picture,
+                    image: "",
                     role: 'C'
                 }
             }
