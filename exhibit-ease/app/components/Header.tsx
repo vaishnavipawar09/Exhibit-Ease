@@ -29,7 +29,7 @@ import { ArrowRight, Bell } from 'tabler-icons-react';
 import { Notification } from '@prisma/client';
 
 
-export default function Header() {
+export default function Page() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const router = useRouter()

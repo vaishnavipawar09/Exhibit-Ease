@@ -6,7 +6,7 @@ import { signIn } from 'next-auth/react';
 import { Alert } from '@mantine/core';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 
-export default function Register() {
+export default function Page() {
     const [formData, setFormData] = useState({
         email: '',
         name: '',

@@ -16,7 +16,7 @@ var fieldStyles = {
     input: { borderColor: 'black', backgroundColor: 'white' },
 }
 
-export default function BookingPage() {
+export default function Page() {
     const { data: session } = useSession();
     const searchParams = useSearchParams();
     const { getMuseumsByField } = useMuseums();
