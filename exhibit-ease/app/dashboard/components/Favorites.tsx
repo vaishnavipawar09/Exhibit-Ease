@@ -7,9 +7,9 @@ import { Accordion, ActionIcon, Center, Checkbox, Grid, Group, Input, NumberInpu
 import { useRouter } from 'next/router';
 import { useQueryState } from 'next-usequerystate'
 import { ClearAll } from 'tabler-icons-react';
-import { MuseumCard } from '@/app/components/MuseumSection';
 import { useSession } from 'next-auth/react';
 import { useMuseums } from '@/app/contexts/MuseumContext';
+import MuseumCard from '@/app/components/MuseumCard';
 
 export default function Page() {
     const [favorited, setFavorited] = useState<Favorite[]>([])

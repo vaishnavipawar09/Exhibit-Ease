@@ -125,7 +125,7 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
     </>
 }
 
-export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
+function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
     // Initialize form with validation rules
     const { data: session } = useSession();
     const form = useForm({
