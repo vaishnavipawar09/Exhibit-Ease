@@ -334,7 +334,7 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
     );
 }
 
-export function CashForm({ ticketPrice }: { ticketPrice: number }) {
+function CashForm({ ticketPrice }: { ticketPrice: number }) {
     // Initialize form with validation rules
     const { data: session } = useSession();
     const form = useForm({
