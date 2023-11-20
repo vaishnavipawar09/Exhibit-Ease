@@ -43,8 +43,7 @@ function UniversalLogin({ isCustomer = true, error, setError }: UniversalLoginPr
     }
 
     const handleSocialLogin = async (provider: string) => {
-        await signIn(provider, { callbackUrl: callbackUrl, redirect: false });
-        router.push(callbackUrl);
+        await signIn(provider, { callbackUrl: callbackUrl });
     }
 
     const handleEmailLogin = async (e: React.FormEvent) => {
