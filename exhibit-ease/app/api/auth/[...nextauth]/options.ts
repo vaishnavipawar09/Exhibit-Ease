@@ -92,6 +92,7 @@ export const options: NextAuthOptions = {
     pages: {
         signIn: '/auth/signin',
     },
+    secret: process.env.NEXTAUTH_SECRET,
     useSecureCookies: false,
     callbacks: {
         async session({ session, token }) {
