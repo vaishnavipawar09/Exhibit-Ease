@@ -8,17 +8,21 @@ import { TextInput, Space, Tabs, Checkbox } from '@mantine/core';
 import Link from 'next/link';
 import { useForm } from '@mantine/form';
 import { useSession } from "next-auth/react";
+import { useRoleRedirect } from '../components/useRoleRedirect';
 
 var fieldStyles = {
     input: { borderColor: 'black', backgroundColor: 'white' },
 }
 
 export default function Page() {
+
     const { data: session } = useSession();
     const [activeTab, setActiveTab] = useState<string | null>('first');
     const { getMuseumsByField } = useMuseums();
     var empMuseumId = session?.user?.museumId;
     var museum = getMuseumsByField('id', empMuseumId || 1)[0];
+
+    useRoleRedirect();
 
     const ticketPrice = museum?.cost || 0;
 

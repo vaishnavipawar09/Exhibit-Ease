@@ -5,9 +5,11 @@ import { Album, Adjustments, ChartInfographic, BuildingBank } from 'tabler-icons
 import MuseumData from './components/MuseumData';
 import EmployeeMgmt from './components/EmployeeMgmt';
 import Promotion from './components/Promotion';
+import { useRoleRedirect } from '../components/useRoleRedirect';
 
 export default function Page() {
   const iconStyle = { width: rem(16), height: rem(16) };
+  useRoleRedirect();
   return (
     <>
       <br />
