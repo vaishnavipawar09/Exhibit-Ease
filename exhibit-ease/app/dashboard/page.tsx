@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { CreditCard, Heart, Receipt } from 'tabler-icons-react';
 import Favorites from './components/Favorites';
 import { useRoleRedirect } from '../components/useRoleRedirect';
+import CreditCardForm from './components/CreditCardInfo';
 
 
 export default function Page() {
@@ -37,7 +38,7 @@ export default function Page() {
           </Tabs.Panel>
 
           <Tabs.Panel value="paymentInfo" pt="xs">
-            Payment Info
+            <CreditCardForm />
           </Tabs.Panel>
 
           <Tabs.Panel value="orders" pt="xs">

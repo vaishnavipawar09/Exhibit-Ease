@@ -1,3 +1,9 @@
+'use client';
+
+import Chat from "../components/Chat";
+import { useRoleRedirect } from "../components/useRoleRedirect";
+
 export default function Page() {
-    return <h1>Support Home</h1>
+    useRoleRedirect();
+    return <Chat data={[]} />;
 }
