@@ -1,10 +1,9 @@
 import { prisma } from '@/lib/prisma';
-import { NextApiRequest, NextApiResponse } from 'next';
 import { parseUrl } from 'next/dist/shared/lib/router/utils/parse-url';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { parse } from 'url';
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: NextRequest, res: NextResponse) {
     try {
         const museums = await prisma.museum.findMany();
 

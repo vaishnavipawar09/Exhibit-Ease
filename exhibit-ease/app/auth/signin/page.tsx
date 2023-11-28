@@ -17,7 +17,7 @@ interface UniversalLoginProps {
     setError: React.Dispatch<SetStateAction<string>>;
 }
 
-export function UniversalLogin({ isCustomer = true, error, setError }: UniversalLoginProps) {
+function UniversalLogin({ isCustomer = true, error, setError }: UniversalLoginProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [emailOrPhone, setEmailOrPhone] = useState('');
@@ -43,8 +43,7 @@ export function UniversalLogin({ isCustomer = true, error, setError }: Universal
     }
 
     const handleSocialLogin = async (provider: string) => {
-        await signIn(provider, { callbackUrl: callbackUrl, redirect: false });
-        router.push(callbackUrl);
+        await signIn(provider, { callbackUrl: callbackUrl });
     }
 
     const handleEmailLogin = async (e: React.FormEvent) => {
@@ -59,6 +58,7 @@ export function UniversalLogin({ isCustomer = true, error, setError }: Universal
             return;
         } else {
             const session = await getSession();
+            router.refresh();
             if (session?.user?.role === 'M') {
                 router.push('/admin');
             } else if (session?.user?.role === 'E') {
@@ -128,7 +128,7 @@ export function UniversalLogin({ isCustomer = true, error, setError }: Universal
 }
 
 
-export default function LoginPage() {
+export default function Page() {
     const [isCustomer, setIsCustomer] = useState(true); // Default to customer
     const [error, setError] = useState('');  // Lifting error state up to the LoginPage component
 

@@ -29,7 +29,7 @@ import { ArrowRight, Bell } from 'tabler-icons-react';
 import { Notification } from '@prisma/client';
 
 
-export default function Header() {
+export default function Page() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const router = useRouter()
@@ -99,7 +99,7 @@ export default function Header() {
             </Group>
             : <Group visibleFrom="sm">
               <Button onClick={() => { signIn() }} variant="default">Log in</Button>
-              <Button onClick={() => { router.push('/auth/register') }} >Sign up</Button>
+              <Button onClick={() => { router.push('/auth/register') }} variant="light">Sign up</Button>
             </Group>}
 
           <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />

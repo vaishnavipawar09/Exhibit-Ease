@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
-import { NextApiRequest, NextApiResponse } from 'next';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 type PrismaError = {
   code: string;
@@ -10,7 +9,7 @@ type PrismaError = {
   };
 };
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
+export async function POST(req: NextRequest, res: NextResponse) {
   let passedValue = await new Response(req.body).text();
   let valueToJson = JSON.parse(passedValue);
   const { email, name, resetCode, phoneNumber, password } = valueToJson;

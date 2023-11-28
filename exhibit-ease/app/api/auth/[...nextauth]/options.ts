@@ -36,10 +36,10 @@ export const options: NextAuthOptions = {
             clientSecret: process.env.FACEBOOK_CLIENT_SECRET ?? '',
             profile(profile) {
                 return {
-                    id: profile.sub,
+                    id: profile.id,
                     name: profile.name,
                     email: profile.email,
-                    image: profile.picture,
+                    image: "",
                     role: 'C'
                 }
             }
@@ -92,6 +92,7 @@ export const options: NextAuthOptions = {
     pages: {
         signIn: '/auth/signin',
     },
+    secret: process.env.NEXTAUTH_SECRET,
     useSecureCookies: false,
     callbacks: {
         async session({ session, token }) {

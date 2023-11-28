@@ -5,11 +5,14 @@ import { useSession } from 'next-auth/react';
 import React, { useState, useEffect } from 'react';
 import { CreditCard, Heart, Receipt } from 'tabler-icons-react';
 import Favorites from './components/Favorites';
+import { useRoleRedirect } from '../components/useRoleRedirect';
+import CreditCardForm from './components/CreditCardInfo';
 
 
 export default function Page() {
   const { data: session } = useSession();
   const iconStyle = { width: rem(16), height: rem(16) };
+  useRoleRedirect();
   return <>
     {session && <>
       <h1>Dashboard</h1>
@@ -35,7 +38,7 @@ export default function Page() {
           </Tabs.Panel>
 
           <Tabs.Panel value="paymentInfo" pt="xs">
-            Payment Info
+            <CreditCardForm />
           </Tabs.Panel>
 
           <Tabs.Panel value="orders" pt="xs">

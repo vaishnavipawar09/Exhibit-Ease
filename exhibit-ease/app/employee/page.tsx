@@ -8,17 +8,21 @@ import { TextInput, Space, Tabs, Checkbox } from '@mantine/core';
 import Link from 'next/link';
 import { useForm } from '@mantine/form';
 import { useSession } from "next-auth/react";
+import { useRoleRedirect } from '../components/useRoleRedirect';
 
 var fieldStyles = {
     input: { borderColor: 'black', backgroundColor: 'white' },
 }
 
-export default function BookingPage() {
+export default function Page() {
+
     const { data: session } = useSession();
     const [activeTab, setActiveTab] = useState<string | null>('first');
     const { getMuseumsByField } = useMuseums();
     var empMuseumId = session?.user?.museumId;
     var museum = getMuseumsByField('id', empMuseumId || 1)[0];
+
+    useRoleRedirect();
 
     const ticketPrice = museum?.cost || 0;
 
@@ -181,7 +185,7 @@ function displayPriceSectionCash(cost: number, tax: number, promoDiscount: numbe
     </>
 }
 
-export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
+function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
     // Initialize form with validation rules
     const { data: session } = useSession();
     const { getMuseumsByField } = useMuseums();
@@ -341,7 +345,7 @@ export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
     );
 }
 
-export function CashForm({ ticketPrice }: { ticketPrice: number }) {
+function CashForm({ ticketPrice }: { ticketPrice: number }) {
     // Initialize form with validation rules
     const { data: session } = useSession();
     const { getMuseumsByField } = useMuseums();

@@ -11,16 +11,19 @@ import { TextInput, Space, Checkbox } from '@mantine/core';
 import Link from 'next/link';
 import { useForm } from '@mantine/form';
 import { useSession } from "next-auth/react";
+import { useRoleRedirect } from '../components/useRoleRedirect';
 
 var fieldStyles = {
     input: { borderColor: 'black', backgroundColor: 'white' },
 }
 
-export default function BookingPage() {
+export default function Page() {
     const { data: session } = useSession();
     const searchParams = useSearchParams();
     const { getMuseumsByField } = useMuseums();
     var museum = getMuseumsByField('id', parseInt(searchParams?.get("id") || "1"))[0];
+
+    useRoleRedirect();
 
     const ticketPrice = museum?.cost || 0;
 

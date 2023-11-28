@@ -6,7 +6,7 @@ import { signIn } from 'next-auth/react';
 import { Alert } from '@mantine/core';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 
-export default function Register() {
+export default function Page() {
     const [formData, setFormData] = useState({
         email: '',
         name: '',
@@ -31,6 +31,7 @@ export default function Register() {
 
             if (response.ok) {
                 const status = await signIn('credentials', { email: formData.email, password: formData.password, callbackUrl: '/', redirect: false, role: 'C' })
+                router.refresh();
                 router.push('/');
             } else {
                 const errorData = await response.json();

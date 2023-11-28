@@ -2,13 +2,13 @@
 
 import { Museum } from '@prisma/client';
 import React, { FC, useEffect, useState } from 'react';
-import { MuseumCard } from '../components/MuseumSection';
 import { useMuseums } from '../contexts/MuseumContext';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { Accordion, ActionIcon, Center, Checkbox, Grid, Group, Input, NumberInput, SimpleGrid, Stack } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { useQueryState } from 'next-usequerystate'
 import { ClearAll } from 'tabler-icons-react';
+import MuseumCard from '../components/MuseumCard';
 
 export default function Page() {
   const { museums: allMuseums, cities, states, prices } = useMuseums();

@@ -57,6 +57,8 @@ model User {
   Booking       Booking[]
   Favorite      Favorite[]
   Notification  Notification[]
+  customerChats Chat[]         @relation("CustomerChats")
+  supportChats  Chat[]         @relation("SupportRepChats")
 }
 
 model VerificationToken {
@@ -85,7 +87,6 @@ model Museum {
   Booking      Booking[]
   Promo        Promo[]
   Favorite     Favorite[]
-  Slideshow    Slideshow[]
   User         User[]
   Notification Notification[]
 }
@@ -139,10 +140,30 @@ model Notification {
   museumId Int
 }
 
-model Slideshow {
-  imageId  String @id
-  museumId Int
-  museum   Museum @relation(fields: [museumId], references: [id])
+model Chat {
+  id           String        @id @default(cuid())
+  customerId   String
+  supportRepId String?
+  messages     ChatMessage[]
+
+  customer   User  @relation("CustomerChats", fields: [customerId], references: [id])
+  supportRep User? @relation("SupportRepChats", fields: [supportRepId], references: [id])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  chatId    String
+  senderId  String
+  text      String
+  delivered Boolean  @default(false)
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  Chat      Chat     @relation(fields: [chatId], references: [id])
+}
+
+model UserStatus {
+  userId   String  @id
+  isOnline Boolean @default(false)
 }
 
 enum MuseumType {

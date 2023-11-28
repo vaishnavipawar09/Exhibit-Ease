@@ -3,7 +3,7 @@ import { useSearchParams } from 'next/navigation';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { Museum } from '@prisma/client';
 
-export default function BookingPage() {
+export default function Page() {
     const [museums, setMuseums] = useState<Museum | null>(null);
     const searchParams = useSearchParams();
 
