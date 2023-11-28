@@ -96,7 +96,7 @@ model Booking {
   id               String          @id @default(cuid())
   userId           String          @map("user_id")
   name             String
-  bookingMade      DateTime
+  bookingMade      DateTime        @default(now())
   visitInfo        DateTime
   paymentType      PaymentType     @default(CARD)
   creditCardInfo   CreditCardInfo? @relation(fields: [creditCardInfoId], references: [id])
