@@ -41,21 +41,19 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
     try {
         let passedValue = await new Response(req.body).text();
         let valueToJson = JSON.parse(passedValue);
-        const { userId, museumId, totalVisitors, totalCost, promoId } = valueToJson;
+        const { userId, museumId, name, visitInfo, paymentType, totalCost, employeeBooked, totalVisitors, creditCardInfoId } = valueToJson;
 
         const booking = await prisma.booking.create({
             data: {
                 userId: userId,
                 museumId: museumId,
-                name: "Name Placeholder",
-                bookingMade: new Date(),
-                visitInfo: new Date(),
-                paymentType: "CARD",
-                paymentInfo: "Payment Info Placeholder",
+                name: name,
+                visitInfo: visitInfo,
+                paymentType: paymentType,
                 totalCost: totalCost,
-                employeeBooked: false,
+                employeeBooked: employeeBooked,
                 totalVisitors: totalVisitors,
-                promoId: promoId,
+                creditCardInfoId: creditCardInfoId
             },
         });
 

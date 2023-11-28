@@ -175,6 +175,7 @@ model CreditCardInfo {
   expiration   String
   securityCode String
   userId       String
+  zipcode String
   Booking      Booking[]
 }
 
