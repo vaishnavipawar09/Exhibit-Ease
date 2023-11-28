@@ -43,8 +43,8 @@ export default function Page() {
                         {museum && (
                             <Image
                                 radius="md"
-                                h={175}
-                                w="auto"
+                                height={175}
+                                width="auto"
                                 fit="cover"
                                 alt={museum.name}
                                 src={museum.main_image || ""}
@@ -96,6 +96,7 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
     if (promoDiscount == undefined) {
         promoDiscount = 0;
     }
+    promoDiscount = promoDiscount * 100
     var ticketCost = cost * numberOfTickets
     if (giftShop == true) {
         ticketCost = ticketCost + 5;
@@ -116,7 +117,7 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
             </div>
             <div className="flex justify-between">
                 <span>Promo:</span>
-                <span>-{promoDiscount}%</span>
+                <span>-{promoDiscount.toFixed(2)}%</span>
             </div>
             <div className="flex justify-between">
                 <span>Total Cost:</span>
@@ -128,7 +129,32 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
     </>
 }
 
-function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
+export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
+    const searchParams = useSearchParams();
+    const { getMuseumsByField } = useMuseums();
+    var museum = getMuseumsByField('id', parseInt(searchParams?.get("id") || "1"))[0];
+    const [promo, setPromo] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchPromo = async () => {
+            try {
+                const response = await fetch(`/api/promos?promoId=${searchParams?.get("promoId")}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setPromo(data.id || '');
+                }
+            } catch (error) {
+                console.error("Error fetching promo code:", error);
+            }
+        };
+
+        fetchPromo();
+    }, [searchParams]);
+
+    useEffect(() => {
+        form.setFieldValue('promo', promo || '');
+    }, [promo]);
+
     // Initialize form with validation rules
     const { data: session } = useSession();
     const form = useForm({
@@ -142,7 +168,7 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
             expDate: '',
             cvv: '',
             zipCode: '',
-            promo: '',
+            promo: promo || '',
             promoVal: 0,
         },
 
@@ -183,7 +209,9 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
         const promo = await fetch(`/api/promos?promoId=${form.values.promo}`)
         if (promo.ok) {
             const res = await promo.json();
-            form.setFieldValue('promoVal', res.discountPercent);
+            if (res.museumId === museum.id || res.active === true) {
+                form.setFieldValue('promoVal', res.discountPercent);
+            }
         }
     };
 
@@ -196,6 +224,7 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                 <NumberInput
                     label="Total tickets"
                     placeholder="Choose a number between 1 and 10"
+                    defaultValue="1"
                     min={1}
                     max={10}
                     {...form.getInputProps('totalTickets')}
@@ -214,8 +243,8 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                 />
 
                 <div className="flex flex-wrap items-center my-4">
-                    <Text fw={700}  >Name: </Text>
-                    <Space w="md" />
+                    <Text style={{ fontWeight: 700 }}>Name: </Text>
+                    <Space style={{ width: '20px' }} />
                     <TextInput
                         {...form.getInputProps('name')}
                         style={{ maxWidth: '24rem' }}
@@ -224,8 +253,8 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                 </div>
 
                 <div className="flex flex-wrap items-center my-4">
-                    <Text fw={700}  >Email: </Text>
-                    <Space w="md" />
+                    <Text style={{ fontWeight: 700 }}>Email: </Text>
+                    <Space style={{ width: '20px' }} />
                     <TextInput
                         {...form.getInputProps('email')}
                         style={{ maxWidth: '24rem' }}
@@ -275,7 +304,7 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                     styles={fieldStyles}
                 />
 
-                <Group mt="md">
+                <Group style={{ marginTop: 'md' }}>
                     <TextInput
                         label="Add a promo code"
                         {...form.getInputProps('promo')}
