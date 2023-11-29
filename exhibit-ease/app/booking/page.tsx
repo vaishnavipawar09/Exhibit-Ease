@@ -1,6 +1,6 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { Museum } from '@prisma/client';
 import { useMuseums } from '../contexts/MuseumContext';
@@ -128,6 +128,7 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
 export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
     const searchParams = useSearchParams();
     const { getMuseumsByField } = useMuseums();
+    const router = useRouter();
     var museum = getMuseumsByField('id', parseInt(searchParams?.get("id") || "1"))[0];
     const [promo, setPromo] = useState<string | null>(null);
 
@@ -167,7 +168,6 @@ export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
             zipCode: '',
             promo: promo || '',
             promoVal: 0,
-            visitInfo: ''
         },
 
         validate: {
@@ -178,26 +178,34 @@ export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
         },
     });
 
+    const [bookingId, setBookingId] = useState<string>("");
+
     async function createBooking() {
+        console.log(session?.user?.id);
         const response = await fetch('/api/bookings', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ userId: session?.user?.id, name: form.values.name, }),
+            body: JSON.stringify({
+                userId: session ? session.user?.id : '',
+                museumId: museum.id,
+                name: form.values.name,
+                visitInfo: value,
+                totalCost: getTotalCost(form.values.totalTickets, ticketPrice, form.values.giftShop, form.values.cafe, form.values.promoVal),
+                employeeBooked: false,
+                totalVisitors: form.values.totalTickets,
+                creditCardInfoId: "clpiysjow0000ufmsj6jyv1p3"
+            }),
         });
         if (response.ok) {
-            window.location.reload();
+            const data = await response.json();
+            setBookingId(data.id);
         } else {
             const errorData = await response.json();
         }
     }
 
-    const [value, setValue] = useState(new Date());
-
-    useEffect(() => {
-        console.log(value);
-    }, [setValue]);
 
     const handleCardNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.replace(/\D/g, ''); // Remove non-digits
@@ -234,6 +242,27 @@ export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
         }
     };
 
+    const [value, setValue] = useState<Date | null>(null);
+    const [date, setDate] = useState(new Date());
+
+    const handleChange = (val: Date | null) => {
+        if (val !== null) {
+            setDate(val);
+        }
+
+        setValue(val);
+    };
+
+    const handleCompletePayment = async () => {
+        await createBooking();
+
+        // Check if bookingId is available before redirecting
+        if (bookingId) {
+            // Redirect to the confirmation page with the bookingId
+            router.push(`/confirmation?id=${bookingId}`);
+        }
+    };
+
     return (
         <Box style={{ maxWidth: 300 }}>
             <form onSubmit={form.onSubmit((values) => console.log(values))}>
@@ -252,11 +281,10 @@ export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                 />
                 <DateTimePicker
                     label="Pick date and time"
-
-                    onDateChange={setValue}
-                    onChange={() => {
-                        console.log(value)
-                    }}
+                    date={date}
+                    onDateChange={setDate}
+                    value={value}
+                    onChange={handleChange}
                 />
                 <Checkbox className="flex flex-wrap items-center my-4"
                     label="Add Giftshop access"
@@ -346,8 +374,8 @@ export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                 </Group>
 
                 {displayPriceSection(ticketPrice, .08, form.values.promoVal, form.values.totalTickets, form.values.giftShop, form.values.cafe)}
-                {/* onClick={createBooking()} */}
-                <Button color='rgba(166, 0, 0, 1)' style={{ margin: '1.25rem 0' }}>Complete Ticket Payment</Button>
+                <Button component="a" href={"#"} color='rgba(166, 0, 0, 1)' onClick={handleCompletePayment} style={{ margin: '1.25rem 0' }}>Complete Ticket Payment</Button>
+
             </form>
 
         </Box>
