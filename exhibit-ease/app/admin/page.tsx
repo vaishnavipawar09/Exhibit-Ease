@@ -5,6 +5,7 @@ import { Album, Adjustments, ChartInfographic, BuildingBank } from 'tabler-icons
 import MuseumData from './components/MuseumData';
 import EmployeeMgmt from './components/EmployeeMgmt';
 import Promotion from './components/Promotion';
+import MyChart from './components/Stats'; 
 import { useRoleRedirect } from '../components/useRoleRedirect';
 
 export default function Page() {
@@ -34,7 +35,10 @@ export default function Page() {
           </Tabs.List>
 
           <Tabs.Panel value="stats" pt="xs">
-            Stats content
+            <div className='col-xs-12'>
+
+            <MyChart />
+            </div>
           </Tabs.Panel>
 
           <Tabs.Panel value="employee" pt="xs">
@@ -49,6 +53,7 @@ export default function Page() {
           </Tabs.Panel>
         </Tabs>
       </div>
+      
     </>
   );
 }
