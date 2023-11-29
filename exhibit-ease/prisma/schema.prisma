@@ -40,25 +40,26 @@ model Session {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  name          String?
-  email         String?        @unique
-  emailVerified DateTime?
-  image         String?
-  payment       String?
-  phoneNumber   String?        @unique
-  password      String?
-  role          String         @default("C")
-  resetCode     String?        @db.VarChar(5)
-  museumId      Int?
-  museum        Museum?        @relation(fields: [museumId], references: [id])
-  accounts      Account[]
-  sessions      Session[]
-  Booking       Booking[]
-  Favorite      Favorite[]
-  Notification  Notification[]
-  customerChats Chat[]         @relation("CustomerChats")
-  supportChats  Chat[]         @relation("SupportRepChats")
+  id             String           @id @default(cuid())
+  name           String?
+  email          String?          @unique
+  emailVerified  DateTime?
+  image          String?
+  payment        String?
+  phoneNumber    String?          @unique
+  password       String?
+  role           String           @default("C")
+  resetCode      String?          @db.VarChar(5)
+  museumId       Int?
+  museum         Museum?          @relation(fields: [museumId], references: [id])
+  accounts       Account[]
+  sessions       Session[]
+  Booking        Booking[]
+  Favorite       Favorite[]
+  Notification   Notification[]
+  customerChats  Chat[]           @relation("CustomerChats")
+  supportChats   Chat[]           @relation("SupportRepChats")
+  CreditCardInfo CreditCardInfo[]
 }
 
 model VerificationToken {
@@ -92,21 +93,22 @@ model Museum {
 }
 
 model Booking {
-  id             String      @id @default(cuid())
-  userId         String      @map("user_id")
-  name           String
-  bookingMade    DateTime
-  visitInfo      DateTime
-  paymentType    PaymentType @default(CARD)
-  paymentInfo    String?
-  totalCost      Float
-  employeeBooked Boolean     @default(false)
-  totalVisitors  Int
-  promo          Promo?      @relation(fields: [promoId], references: [id])
-  museum         Museum      @relation(fields: [museumId], references: [id])
-  user           User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  museumId       Int
-  promoId        Int?
+  id               String          @id @default(cuid())
+  userId           String          @map("user_id")
+  name             String
+  bookingMade      DateTime        @default(now())
+  visitInfo        DateTime
+  paymentType      PaymentType     @default(CARD)
+  creditCardInfo   CreditCardInfo? @relation(fields: [creditCardInfoId], references: [id])
+  totalCost        Float
+  employeeBooked   Boolean         @default(false)
+  totalVisitors    Int
+  promo            Promo?          @relation(fields: [promoId], references: [id])
+  museum           Museum          @relation(fields: [museumId], references: [id])
+  user             User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  museumId         Int
+  promoId          Int?
+  creditCardInfoId String?
 }
 
 model Promo {
@@ -164,6 +166,17 @@ model ChatMessage {
 model UserStatus {
   userId   String  @id
   isOnline Boolean @default(false)
+}
+
+model CreditCardInfo {
+  id           String    @id @default(cuid())
+  user         User      @relation(fields: [userId], references: [id])
+  cardNumber   String
+  expiration   String
+  securityCode String
+  userId       String
+  zipcode      String
+  Booking      Booking[]
 }
 
 enum MuseumType {

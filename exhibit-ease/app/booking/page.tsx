@@ -1,14 +1,12 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { Museum } from '@prisma/client';
-// import Image from "next/image";
 import { useMuseums } from '../contexts/MuseumContext';
 import { Image, Loader, Button, Text, Paper, Container, Accordion, NumberInput, StylesApiProps, Group, Box } from '@mantine/core';
-import { Carousel } from '@mantine/carousel';
+import { DateTimePicker } from '@mantine/dates';
 import { TextInput, Space, Checkbox } from '@mantine/core';
-import Link from 'next/link';
 import { useForm } from '@mantine/form';
 import { useSession } from "next-auth/react";
 import { useRoleRedirect } from '../components/useRoleRedirect';
@@ -43,8 +41,8 @@ export default function Page() {
                         {museum && (
                             <Image
                                 radius="md"
-                                h={175}
-                                w="auto"
+                                height={175}
+                                width="auto"
                                 fit="cover"
                                 alt={museum.name}
                                 src={museum.main_image || ""}
@@ -58,9 +56,6 @@ export default function Page() {
                 </Paper>
 
                 <CreditCardForm ticketPrice={ticketPrice} />
-
-
-                <Button color='rgba(166, 0, 0, 1)' component={Link} href={`/confirmation?id=${museum?.id}`} style={{ margin: '1.25rem 0' }}>Complete Ticket Payment</Button>
             </div>
 
         ) : <div className="flex justify-center items-center h-full">
@@ -68,6 +63,7 @@ export default function Page() {
         </div>}
     </main>
 }
+
 
 function getTotalCost(numberOfTickets: number, ticketPrice: number, giftShop: boolean, cafe: boolean, promoDiscount: number) {
     const taxRate = .08
@@ -96,6 +92,7 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
     if (promoDiscount == undefined) {
         promoDiscount = 0;
     }
+    promoDiscount = promoDiscount * 100
     var ticketCost = cost * numberOfTickets
     if (giftShop == true) {
         ticketCost = ticketCost + 5;
@@ -116,7 +113,7 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
             </div>
             <div className="flex justify-between">
                 <span>Promo:</span>
-                <span>-{promoDiscount}%</span>
+                <span>-{promoDiscount.toFixed(2)}%</span>
             </div>
             <div className="flex justify-between">
                 <span>Total Cost:</span>
@@ -128,7 +125,34 @@ function displayPriceSection(cost: number, tax: number, promoDiscount: number, n
     </>
 }
 
-function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
+export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
+    const searchParams = useSearchParams();
+    const { getMuseumsByField } = useMuseums();
+    const router = useRouter();
+    var museum = getMuseumsByField('id', parseInt(searchParams?.get("id") || "1"))[0];
+    const [promo, setPromo] = useState<string | null>(null);
+
+
+    useEffect(() => {
+        const fetchPromo = async () => {
+            try {
+                const response = await fetch(`/api/promos?promoId=${searchParams?.get("promoId")}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setPromo(data.id || '');
+                }
+            } catch (error) {
+                console.error("Error fetching promo code:", error);
+            }
+        };
+
+        fetchPromo();
+    }, [searchParams]);
+
+    useEffect(() => {
+        form.setFieldValue('promo', promo || '');
+    }, [promo]);
+
     // Initialize form with validation rules
     const { data: session } = useSession();
     const form = useForm({
@@ -142,7 +166,7 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
             expDate: '',
             cvv: '',
             zipCode: '',
-            promo: '',
+            promo: promo || '',
             promoVal: 0,
         },
 
@@ -153,6 +177,35 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
             zipCode: (value) => (/^\d{5}$/.test(value) ? null : 'Invalid ZIP code'),
         },
     });
+
+    const [bookingId, setBookingId] = useState<string>("");
+
+    async function createBooking() {
+        console.log(session?.user?.id);
+        const response = await fetch('/api/bookings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: session ? session.user?.id : '',
+                museumId: museum.id,
+                name: form.values.name,
+                visitInfo: value,
+                totalCost: getTotalCost(form.values.totalTickets, ticketPrice, form.values.giftShop, form.values.cafe, form.values.promoVal),
+                employeeBooked: false,
+                totalVisitors: form.values.totalTickets,
+                creditCardInfoId: "clpiysjow0000ufmsj6jyv1p3"
+            }),
+        });
+        if (response.ok) {
+            const data = await response.json();
+            setBookingId(data.id);
+        } else {
+            const errorData = await response.json();
+        }
+    }
+
 
     const handleCardNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.replace(/\D/g, ''); // Remove non-digits
@@ -183,7 +236,30 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
         const promo = await fetch(`/api/promos?promoId=${form.values.promo}`)
         if (promo.ok) {
             const res = await promo.json();
-            form.setFieldValue('promoVal', res.discountPercent);
+            if (res.museumId === museum.id || res.active === true) {
+                form.setFieldValue('promoVal', res.discountPercent);
+            }
+        }
+    };
+
+    const [value, setValue] = useState<Date | null>(null);
+    const [date, setDate] = useState(new Date());
+
+    const handleChange = (val: Date | null) => {
+        if (val !== null) {
+            setDate(val);
+        }
+
+        setValue(val);
+    };
+
+    const handleCompletePayment = async () => {
+        await createBooking();
+
+        // Check if bookingId is available before redirecting
+        if (bookingId) {
+            // Redirect to the confirmation page with the bookingId
+            router.push(`/confirmation?id=${bookingId}`);
         }
     };
 
@@ -196,11 +272,19 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                 <NumberInput
                     label="Total tickets"
                     placeholder="Choose a number between 1 and 10"
+                    defaultValue="1"
                     min={1}
                     max={10}
                     {...form.getInputProps('totalTickets')}
                     style={{ maxWidth: '24rem' }}
                     styles={fieldStyles}
+                />
+                <DateTimePicker
+                    label="Pick date and time"
+                    date={date}
+                    onDateChange={setDate}
+                    value={value}
+                    onChange={handleChange}
                 />
                 <Checkbox className="flex flex-wrap items-center my-4"
                     label="Add Giftshop access"
@@ -214,8 +298,8 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                 />
 
                 <div className="flex flex-wrap items-center my-4">
-                    <Text fw={700}  >Name: </Text>
-                    <Space w="md" />
+                    <Text style={{ fontWeight: 700 }}>Name: </Text>
+                    <Space style={{ width: '20px' }} />
                     <TextInput
                         {...form.getInputProps('name')}
                         style={{ maxWidth: '24rem' }}
@@ -224,8 +308,8 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                 </div>
 
                 <div className="flex flex-wrap items-center my-4">
-                    <Text fw={700}  >Email: </Text>
-                    <Space w="md" />
+                    <Text style={{ fontWeight: 700 }}>Email: </Text>
+                    <Space style={{ width: '20px' }} />
                     <TextInput
                         {...form.getInputProps('email')}
                         style={{ maxWidth: '24rem' }}
@@ -275,7 +359,7 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                     styles={fieldStyles}
                 />
 
-                <Group mt="md">
+                <Group style={{ marginTop: 'md' }}>
                     <TextInput
                         label="Add a promo code"
                         {...form.getInputProps('promo')}
@@ -290,6 +374,8 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                 </Group>
 
                 {displayPriceSection(ticketPrice, .08, form.values.promoVal, form.values.totalTickets, form.values.giftShop, form.values.cafe)}
+                <Button component="a" href={"#"} color='rgba(166, 0, 0, 1)' onClick={handleCompletePayment} style={{ margin: '1.25rem 0' }}>Complete Ticket Payment</Button>
+
             </form>
 
         </Box>

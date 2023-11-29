@@ -42,8 +42,8 @@ export default function Page() {
                         {museum && (
                             <Image
                                 radius="md"
-                                h={175}
-                                w="auto"
+                                height={175}
+                                width="auto"
                                 fit="cover"
                                 alt={museum.name}
                                 src={museum.main_image || ""}
@@ -108,6 +108,7 @@ function displayPriceSectionCard(cost: number, tax: number, promoDiscount: numbe
     if (promoDiscount == undefined) {
         promoDiscount = 0;
     }
+    promoDiscount = promoDiscount * 100
     var ticketCost = cost * numberOfTickets
     if (giftShop == true) {
         ticketCost = ticketCost + 5;
@@ -127,7 +128,7 @@ function displayPriceSectionCard(cost: number, tax: number, promoDiscount: numbe
             </div>
             <div className="flex justify-between">
                 <span>Promo:</span>
-                <span>-{promoDiscount}%</span>
+                <span>-{promoDiscount.toFixed(2)}%</span>
             </div>
             <div className="flex justify-between">
                 <span>Total Cost:</span>
@@ -143,6 +144,7 @@ function displayPriceSectionCash(cost: number, tax: number, promoDiscount: numbe
     if (promoDiscount == undefined) {
         promoDiscount = 0;
     }
+    promoDiscount = promoDiscount * 100
     var ticketCost = cost * numberOfTickets
     if (giftShop == true) {
         ticketCost = ticketCost + 5;
@@ -163,7 +165,7 @@ function displayPriceSectionCash(cost: number, tax: number, promoDiscount: numbe
             </div>
             <div className="flex justify-between">
                 <span>Promo:</span>
-                <span>-{promoDiscount}%</span>
+                <span>-{promoDiscount.toFixed(2)}%</span>
             </div>
             <div className="flex justify-between">
                 <span>Total Cost:</span>
@@ -186,6 +188,9 @@ function displayPriceSectionCash(cost: number, tax: number, promoDiscount: numbe
 function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
     // Initialize form with validation rules
     const { data: session } = useSession();
+    const { getMuseumsByField } = useMuseums();
+    var empMuseumId = session?.user?.museumId;
+    var museum = getMuseumsByField('id', empMuseumId || 1)[0];
     const form = useForm({
         initialValues: {
             totalTickets: 0,
@@ -237,7 +242,9 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
         const promo = await fetch(`/api/promos?promoId=${form.values.promo}`)
         if (promo.ok) {
             const res = await promo.json();
-            form.setFieldValue('promoVal', res.discountPercent);
+            if (res.museumId === museum.id) {
+                form.setFieldValue('promoVal', res.discountPercent);
+            }
         }
     };
 
@@ -267,8 +274,8 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                     color='rgba(166, 0, 0, 1)'
                 />
                 <div className="flex flex-wrap items-center my-4">
-                    <Text fw={700}  >Name: </Text>
-                    <Space w="md" />
+                    <Text style={{ fontWeight: 700 }}>Name: </Text>
+                    <Space style={{ width: '20px' }} />
                     <TextInput
                         {...form.getInputProps('name')}
                         style={{ maxWidth: '24rem' }}
@@ -318,7 +325,7 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                     styles={fieldStyles}
                 />
 
-                <Group mt="md">
+                <Group style={{ marginTop: 'md' }}>
                     <TextInput
                         label="Add a promo code"
                         {...form.getInputProps('promo')}
@@ -341,6 +348,9 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
 function CashForm({ ticketPrice }: { ticketPrice: number }) {
     // Initialize form with validation rules
     const { data: session } = useSession();
+    const { getMuseumsByField } = useMuseums();
+    var empMuseumId = session?.user?.museumId;
+    var museum = getMuseumsByField('id', empMuseumId || 1)[0];
     const form = useForm({
         initialValues: {
             totalTickets: 0,
@@ -358,10 +368,11 @@ function CashForm({ ticketPrice }: { ticketPrice: number }) {
         const promo = await fetch(`/api/promos?promoId=${form.values.promo}`)
         if (promo.ok) {
             const res = await promo.json();
-            form.setFieldValue('promoVal', res.discountPercent);
+            if (res.museumId === museum.id || res.active === true) {
+                form.setFieldValue('promoVal', res.discountPercent);
+            }
         }
     };
-
 
     return (
         <Box style={{ maxWidth: 300 }}>
@@ -388,8 +399,8 @@ function CashForm({ ticketPrice }: { ticketPrice: number }) {
                     color='rgba(166, 0, 0, 1)'
                 />
                 <div className="flex flex-wrap items-center my-4">
-                    <Text fw={700}  >Name: </Text>
-                    <Space w="md" />
+                    <Text style={{ fontWeight: 700 }}>Name: </Text>
+                    <Space style={{ width: '20px' }} />
                     <TextInput
                         {...form.getInputProps('name')}
                         style={{ maxWidth: '24rem' }}
@@ -398,8 +409,8 @@ function CashForm({ ticketPrice }: { ticketPrice: number }) {
                 </div>
 
                 <div className="flex flex-wrap items-center my-4">
-                    <Text fw={700}  >Amount Paid: </Text>
-                    <Space w="md" />
+                    <Text style={{ fontWeight: 700 }}>Amount Paid: </Text>
+                    <Space style={{ width: '20px' }} />
                     <NumberInput
                         decimalScale={2}
                         fixedDecimalScale
@@ -410,7 +421,7 @@ function CashForm({ ticketPrice }: { ticketPrice: number }) {
                     />
                 </div>
 
-                <Group mt="md">
+                <Group style={{ marginTop: 'md' }}>
                     <TextInput
                         label="Add a promo code"
                         {...form.getInputProps('promo')}
