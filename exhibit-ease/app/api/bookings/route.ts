@@ -3,37 +3,30 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest, res: NextResponse) {
-    let userId
-    if (req.nextUrl.searchParams.get('userId') != undefined) {
-        userId = req.nextUrl.searchParams.get('userId');
-    }
-
-    let museumId
-    if (req.nextUrl.searchParams.get('museumId') != undefined) {
-        museumId = parseInt(req.nextUrl.searchParams.get('museumId') || '0', 10);
-    }
-
     try {
-        if (userId && museumId) {
-            const book = await prisma.booking.findMany({
-                where: {
-                    userId: userId,
-                    museumId: museumId
-                },
-            });
+        const bookingId = req.nextUrl.searchParams.get('bookingId') || '0';
+
+        if (!bookingId) {
+            return NextResponse.json({ error: 'Invalid bookingId' }, { status: 400 });
         }
-        if (userId && !museumId) {
-            const book = await prisma.booking.findMany({
-                where: {
-                    userId: userId,
-                },
-            });
-            return NextResponse.json(book);
+
+        const booking = await prisma.booking.findUnique({
+            where: {
+                id: bookingId,
+            },
+        });
+
+        if (!booking) {
+            return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
         }
-        return NextResponse.json({});
+
+        return NextResponse.json(booking);
 
     } catch (error) {
+        console.error('Error fetching booking details:', error);
         return NextResponse.error();
+    } finally {
+        await prisma.$disconnect();
     }
 }
 

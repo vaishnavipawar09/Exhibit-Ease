@@ -9,6 +9,8 @@ import Link from 'next/link';
 import { useForm } from '@mantine/form';
 import { useSession } from "next-auth/react";
 import { useRoleRedirect } from '../components/useRoleRedirect';
+import { useRouter } from 'next/navigation';
+import { DateTimePicker } from '@mantine/dates';
 
 var fieldStyles = {
     input: { borderColor: 'black', backgroundColor: 'white' },
@@ -188,6 +190,7 @@ function displayPriceSectionCash(cost: number, tax: number, promoDiscount: numbe
 function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
     // Initialize form with validation rules
     const { data: session } = useSession();
+    const router = useRouter();
     const { getMuseumsByField } = useMuseums();
     var empMuseumId = session?.user?.museumId;
     var museum = getMuseumsByField('id', empMuseumId || 1)[0];
@@ -212,6 +215,31 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
             zipCode: (value) => (/^\d{5}$/.test(value) ? null : 'Invalid ZIP code'),
         },
     });
+
+    async function createBooking() {
+        const response = await fetch('/api/bookings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: session ? session.user?.id : '',
+                museumId: museum.id,
+                name: form.values.name,
+                visitInfo: value,
+                totalCost: getTotalCost(form.values.totalTickets, ticketPrice, form.values.giftShop, form.values.cafe, form.values.promoVal),
+                employeeBooked: true,
+                totalVisitors: form.values.totalTickets,
+                creditCardInfoId: "clpiysjow0000ufmsj6jyv1p3"
+            }),
+        });
+        if (response.ok) {
+            const data = await response.json();
+            router.push(`/confirmation?id=${data.booking.id}`);
+        } else {
+            const errorData = await response.json();
+        }
+    }
 
     const handleCardNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.replace(/\D/g, ''); // Remove non-digits
@@ -248,6 +276,17 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
         }
     };
 
+    const [value, setValue] = useState<Date | null>(null);
+    const [date, setDate] = useState(new Date());
+
+    const handleChange = (val: Date | null) => {
+        if (val !== null) {
+            setDate(val);
+        }
+
+        setValue(val);
+    };
+
     return (
         <Box style={{ maxWidth: 300 }}>
             <form onSubmit={form.onSubmit((values) => console.log(values))}>
@@ -262,6 +301,13 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                     {...form.getInputProps('totalTickets')}
                     style={{ maxWidth: '24rem' }}
                     styles={fieldStyles}
+                />
+                <DateTimePicker
+                    label="Pick date and time"
+                    date={date}
+                    onDateChange={setDate}
+                    value={value}
+                    onChange={handleChange}
                 />
                 <Checkbox className="flex flex-wrap items-center my-4"
                     label="Add Giftshop access"
@@ -339,14 +385,18 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                     </Button>
                 </Group>
                 {displayPriceSectionCard(ticketPrice, .08, form.values.promoVal, form.values.totalTickets, form.values.giftShop, form.values.cafe)}
+                <Button component="a" color='rgba(166, 0, 0, 1)' onClick={createBooking} style={{ margin: '1.25rem 0' }}>Complete Ticket Payment</Button>
+
             </form>
 
         </Box>
     );
 }
 
+
 function CashForm({ ticketPrice }: { ticketPrice: number }) {
     // Initialize form with validation rules
+    const router = useRouter();
     const { data: session } = useSession();
     const { getMuseumsByField } = useMuseums();
     var empMuseumId = session?.user?.museumId;
@@ -364,6 +414,33 @@ function CashForm({ ticketPrice }: { ticketPrice: number }) {
         },
     });
 
+    async function createBooking() {
+        const response = await fetch('/api/bookings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: session ? session.user?.id : '',
+                museumId: museum.id,
+                name: form.values.name,
+                visitInfo: value,
+                totalCost: getTotalCost(form.values.totalTickets, ticketPrice, form.values.giftShop, form.values.cafe, form.values.promoVal),
+                employeeBooked: true,
+                paymentType: "CASH",
+                totalVisitors: form.values.totalTickets,
+                creditCardInfoId: "clpiysjow0000ufmsj6jyv1p3"
+            }),
+        });
+        if (response.ok) {
+            const data = await response.json();
+            router.push(`/confirmation?id=${data.booking.id}`);
+        } else {
+            const errorData = await response.json();
+        }
+    }
+
+
     const handlePromo = async () => {
         const promo = await fetch(`/api/promos?promoId=${form.values.promo}`)
         if (promo.ok) {
@@ -372,6 +449,17 @@ function CashForm({ ticketPrice }: { ticketPrice: number }) {
                 form.setFieldValue('promoVal', res.discountPercent);
             }
         }
+    };
+
+    const [value, setValue] = useState<Date | null>(null);
+    const [date, setDate] = useState(new Date());
+
+    const handleChange = (val: Date | null) => {
+        if (val !== null) {
+            setDate(val);
+        }
+
+        setValue(val);
     };
 
     return (
@@ -386,6 +474,13 @@ function CashForm({ ticketPrice }: { ticketPrice: number }) {
                     {...form.getInputProps('totalTickets')}
                     style={{ maxWidth: '24rem' }}
                     styles={fieldStyles}
+                />
+                <DateTimePicker
+                    label="Pick date and time"
+                    date={date}
+                    onDateChange={setDate}
+                    value={value}
+                    onChange={handleChange}
                 />
                 <Checkbox className="flex flex-wrap items-center my-4"
                     label="Add Giftshop access"
@@ -436,6 +531,7 @@ function CashForm({ ticketPrice }: { ticketPrice: number }) {
                 </Group>
 
                 {displayPriceSectionCash(ticketPrice, .08, form.values.promoVal, form.values.totalTickets, form.values.amountPaid, form.values.giftShop, form.values.cafe)}
+                <Button component="a" color='rgba(166, 0, 0, 1)' onClick={createBooking} style={{ margin: '1.25rem 0' }}>Complete Ticket Payment</Button>
 
             </form>
 

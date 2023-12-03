@@ -178,10 +178,7 @@ export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
         },
     });
 
-    const [bookingId, setBookingId] = useState<string>("");
-
     async function createBooking() {
-        console.log(session?.user?.id);
         const response = await fetch('/api/bookings', {
             method: 'POST',
             headers: {
@@ -200,7 +197,7 @@ export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
         });
         if (response.ok) {
             const data = await response.json();
-            setBookingId(data.id);
+            router.push(`/confirmation?id=${data.booking.id}`);
         } else {
             const errorData = await response.json();
         }
@@ -253,15 +250,6 @@ export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
         setValue(val);
     };
 
-    const handleCompletePayment = async () => {
-        await createBooking();
-
-        // Check if bookingId is available before redirecting
-        if (bookingId) {
-            // Redirect to the confirmation page with the bookingId
-            router.push(`/confirmation?id=${bookingId}`);
-        }
-    };
 
     return (
         <Box style={{ maxWidth: 300 }}>
@@ -374,7 +362,7 @@ export function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                 </Group>
 
                 {displayPriceSection(ticketPrice, .08, form.values.promoVal, form.values.totalTickets, form.values.giftShop, form.values.cafe)}
-                <Button component="a" href={"#"} color='rgba(166, 0, 0, 1)' onClick={handleCompletePayment} style={{ margin: '1.25rem 0' }}>Complete Ticket Payment</Button>
+                <Button component="a" color='rgba(166, 0, 0, 1)' onClick={createBooking} style={{ margin: '1.25rem 0' }}>Complete Ticket Payment</Button>
 
             </form>
 
