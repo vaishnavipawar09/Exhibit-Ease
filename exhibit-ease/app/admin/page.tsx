@@ -3,7 +3,7 @@ import { Tabs, rem } from '@mantine/core';
 
 import { Album, Adjustments, ChartInfographic, BuildingBank } from 'tabler-icons-react';
 import MuseumData from './components/MuseumData';
-import EmployeeMgmt from './components/EmployeeMgmt';
+//import EmployeeMgmt from './components/EmployeeMgmt';
 import Promotion from './components/Promotion';
 import MyChart from './components/Stats'; 
 import { useRoleRedirect } from '../components/useRoleRedirect';
@@ -25,9 +25,9 @@ export default function Page() {
             <Tabs.Tab value="stats" leftSection={<ChartInfographic style={iconStyle} />}>
               Stats
             </Tabs.Tab>
-            <Tabs.Tab value="employee" leftSection={<Album style={iconStyle} />}>
+            {/* <Tabs.Tab value="employee" leftSection={<Album style={iconStyle} />}>
               Employee Info
-            </Tabs.Tab>
+            </Tabs.Tab> */}
             <Tabs.Tab value="promotions" leftSection={<Adjustments style={iconStyle} />}>
               Add/Delete promotions
             </Tabs.Tab>
@@ -36,14 +36,14 @@ export default function Page() {
 
           <Tabs.Panel value="stats" pt="xs">
             <div className='col-xs-12'>
-
+            
             <MyChart />
             </div>
           </Tabs.Panel>
 
-          <Tabs.Panel value="employee" pt="xs">
+          {/* <Tabs.Panel value="employee" pt="xs">
             <EmployeeMgmt />
-          </Tabs.Panel>
+          </Tabs.Panel> */}
 
           <Tabs.Panel value="promotions" pt="xs">
             <Promotion />
