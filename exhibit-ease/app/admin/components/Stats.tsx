@@ -18,8 +18,7 @@ ChartJS.register(
   LineElement,
   Tooltip
 );
-import { useEffect } from "react"
-
+import { useEffect, useState } from "react";
 
 const MyChart = () => {
   const [chartData, setChartData] = useState({
@@ -29,14 +28,16 @@ const MyChart = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch('/api/stats');
+      const response = await fetch("/api/stats");
       const data = await response.json();
       setChartData({
         labels: data.labels,
-        datasets: [{ 
-          data: data.data,
-          backgroundColor: 'purple',
-        }],
+        datasets: [
+          {
+            data: data.data,
+            backgroundColor: "purple",
+          },
+        ],
       });
     };
 
