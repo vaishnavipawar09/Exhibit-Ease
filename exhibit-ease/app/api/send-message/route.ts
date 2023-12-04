@@ -35,9 +35,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
             read: message.read
         });
 
-        NextResponse.json({ message: 'Message sent', data: message });
+        return NextResponse.json({ message: 'Message sent', data: message });
     } catch (error) {
         console.error("Error saving message:", error);
-        NextResponse.json({ error: "Error saving message" });
+        return NextResponse.json({ error: "Error saving message" });
     }
 }

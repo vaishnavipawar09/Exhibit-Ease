@@ -25,25 +25,32 @@ export default function Page({ data }: iAppProps) {
 
     // Assume user ID and chat session ID are available
     const userId = session?.user?.id;
-
     useEffect(() => {
-        const createChatSession = async () => {
+        const savedChatSessionId = localStorage.getItem('chatSessionId');
+        if (savedChatSessionId) {
+            setChatSessionId(savedChatSessionId);
+        } else {
+            createChatSession();
+        }
+    }, []);
+
+    const createChatSession = async () => {
+        if (session?.user?.id) {
             try {
-                const response = await fetch('/api/create-chat', {
+                const response = await fetch('/api/createChat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId }),
                 });
                 const data = await response.json();
-                console.log(data);
                 setChatSessionId(data.chatSessionId);
             } catch (error) {
                 console.error("Failed to create chat session:", error);
             }
-        };
+        }
+    };
 
-        createChatSession();
-    }, [userId]);
+    createChatSession();
 
     useEffect(() => {
         if (!chatSessionId) return;
