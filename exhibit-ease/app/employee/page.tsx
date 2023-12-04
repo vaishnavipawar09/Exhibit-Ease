@@ -72,8 +72,6 @@ export default function Page() {
                     </Tabs.Panel>
                 </Tabs>
 
-
-                <Button color='rgba(166, 0, 0, 1)' component={Link} href={`/confirmation?id=${museum?.id}`} style={{ margin: '1.25rem 0' }}>Complete Ticket Payment</Button>
             </div>
 
         ) : <div className="flex justify-center items-center h-full">
@@ -323,7 +321,6 @@ function CreditCardForm({ ticketPrice }: { ticketPrice: number }) {
                     <Text style={{ fontWeight: 700 }}>Name: </Text>
                     <Space style={{ width: '20px' }} />
                     <TextInput
-                        {...form.getInputProps('name')}
                         style={{ maxWidth: '24rem' }}
                         styles={fieldStyles}
                     />
@@ -497,7 +494,6 @@ function CashForm({ ticketPrice }: { ticketPrice: number }) {
                     <Text style={{ fontWeight: 700 }}>Name: </Text>
                     <Space style={{ width: '20px' }} />
                     <TextInput
-                        {...form.getInputProps('name')}
                         style={{ maxWidth: '24rem' }}
                         styles={fieldStyles}
                     />

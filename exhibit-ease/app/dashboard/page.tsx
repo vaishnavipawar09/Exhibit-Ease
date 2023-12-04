@@ -8,6 +8,7 @@ import Favorites from './components/Favorites';
 
 import { useRoleRedirect } from '../components/useRoleRedirect';
 import CreditCardForm from './components/CreditCardInfo';
+import OrderList from './components/orderList';
 
 
 export default function Page() {
@@ -43,7 +44,7 @@ export default function Page() {
           </Tabs.Panel>
 
           <Tabs.Panel value="orders" pt="xs">
-            Orders
+            <OrderList />
           </Tabs.Panel>
         </Tabs>
       </div>

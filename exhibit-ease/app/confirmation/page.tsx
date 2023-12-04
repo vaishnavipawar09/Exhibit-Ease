@@ -29,7 +29,6 @@ export default function Page() {
                 if (response.ok) {
                     const data = await response.json();
                     setBookingData(data);
-                    console.log(data)
                 } else {
                     console.error('Error fetching booking details:', response.statusText);
                 }
