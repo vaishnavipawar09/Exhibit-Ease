@@ -14,6 +14,9 @@ export async function GET(req: NextRequest, res: NextResponse) {
             where: {
                 userId: userId,
             },
+            include: {
+                museum: true,
+            }
         });
 
         if (!booking) {

@@ -41,30 +41,16 @@ export default function Page() {
         fetchBookingDetails();
     }, [userId]);
 
-
-    async function fetchMuseumInfo(museumId: String) {
-        const response = await fetch(`/api/museums?museumId=${museumId}`, {
-            method: 'Get',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            return data.name
-        } else {
-            const errorData = await response.json();
-        }
-    }
-
     return (
         <div>
             <h1>User Orders</h1>
             <ul>
                 {orders.map((order: any) => (
                     <li key={order.id}>
-                        <strong>Order ID:</strong> {order.id}
+                        <strong>Museum Name:</strong> {order.museum.name} <br />
+                        Order ID: {order.id} <br />
+                        Total: {order.totalCost} <br />
+                        Visit Date: {order.visitInfo} <br />
                         <p><Button component="a" color='rgba(166, 0, 0, 1)' href={`/confirmation?id=${order.id}`} style={{ margin: '1.25rem 0' }}>View booking detail</Button></p>
                         <hr style={{ margin: '0.5rem 0', borderColor: 'gray' }} />
                     </li>
