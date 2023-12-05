@@ -3,54 +3,55 @@
 import { useState, useEffect, useRef } from 'react';
 import { TextInput, Button, Paper, Box, Text, Group } from '@mantine/core';
 import Pusher from 'pusher-js';
-import { createId } from '@paralleldrive/cuid2';
 import { useSession } from 'next-auth/react';
-import { ChatMessage } from '@prisma/client';
-import { prisma } from '@/lib/prisma';
+import { Booking, ChatMessage } from '@prisma/client';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface iAppProps {
     msgs: ChatMessage[];
+    chatId: string;
 }
 
-export default function Page({ msgs }: iAppProps) {
+export default function Page() {
     const { data: session } = useSession();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [newMessage, setNewMessage] = useState('');
+
+    const searchParams = useSearchParams();
+
     const [chatSessionId, setChatSessionId] = useState<string | null>(null);
+    const [bookingData, setBookingData] = useState<Booking | null>(null);
     const messageEndRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
 
 
     const userId = session?.user?.id;
-    useEffect(() => {
-        const savedChatSessionId = window.localStorage.getItem('chatSessionId');
-        if (savedChatSessionId) {
-            setChatSessionId(savedChatSessionId);
-        } else {
-            createChatSession();
-        }
-    }, [session?.user?.id]);
 
 
+    const fetchBookingDetails = async (text: string) => {
+        try {
 
-    const createChatSession = async () => {
-        if (session?.user?.id) {
-            try {
-                const response = await fetch('http://localhost:3000/api/createChat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId }),
-                });
-                const data = await response.clone().json();
+            const response = await fetch(`/api/bookings?bookingId=${text}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
 
-                setChatSessionId(data.chatSessionId);
-                window.localStorage.setItem('chatSessionId', data.chatSessionId);
-            } catch (error) {
-                console.error("Failed to create chat session:", error);
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setBookingData(data);
+            } else {
+                console.error('Error fetching booking details:', response.statusText);
             }
+        } catch (error) {
+            console.error('Error fetching booking details:', error);
         }
     };
 
     useEffect(() => {
+        setChatSessionId(searchParams.get("chatSessionId"));
         const fetchChatMessages = async () => {
             try {
                 const response = await fetch(`/api/getMessages?chatSessionId=${chatSessionId}`);
@@ -70,16 +71,22 @@ export default function Page({ msgs }: iAppProps) {
         if (!chatSessionId) {
             return;
         };
+
         const chatChannelName = `chat-${chatSessionId}`;
         const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_PUB_KEY as string,
             { cluster: "us2" });
         const chatChannel = pusher.subscribe(chatChannelName);
         chatChannel.bind('new-message', (data: any) => {
             setMessages((prev) => [...prev, data]);
+            if (data.text.startsWith("oid:")) {
+                fetchBookingDetails(data.text.substring(4));
+            }
         });
+
 
         return () => {
             pusher.unbind_all();
+
             pusher.unsubscribe(chatChannelName);
         };
     }, [chatSessionId]);
@@ -103,19 +110,22 @@ export default function Page({ msgs }: iAppProps) {
     return (
         <Box style={{ maxWidth: 800, margin: 'auto' }}>
             <Paper shadow="xs" p="md">
-                <Text size="lg" fw={500}>Support Chat</Text>
+                <Group justify='space-between'>
+                    <Text size="lg" fw={500}>Support Chat</Text>
+                    <Button color='rgba(166, 0, 0, 1)' onClick={() => { router.push("/support"); }}>Exit Chat</Button>
+
+                </Group>
                 <div style={{ height: 400, overflowY: 'auto', marginTop: 20 }}>
                     {messages && messages.map((message, index) => (
                         <Group
+                            gap="xs"
                             key={index}
                             style={{ marginBottom: 12, marginRight: 10, flexDirection: 'column', alignItems: message.senderId === userId ? 'flex-end' : 'flex-start' }}
                         >
-                            <Text size="sm" style={{ color: "grey" }}>{message.senderId === userId ? "You" : "Support"}</Text>
+                            <Text size="md" style={{ color: "black" }}>{message.senderId === userId ? "You" : "Customer"}</Text>
                             <Paper style={{ padding: "12px", backgroundColor: message.senderId === userId ? "lightgrey" : "DodgerBlue" }}>
                                 <Text>{message.text}</Text>
                             </Paper>
-                            {message.senderId === userId ? <Text size="xs" style={{ color: "grey" }}>{message.delivered ? "Delivered" : "Read"}</Text> : null}
-
                         </Group>
                     ))}
                     <div ref={messageEndRef} />
@@ -134,8 +144,20 @@ export default function Page({ msgs }: iAppProps) {
                         }
                     }}
                 />
-                <Text size="xs">Send "oid:YOUR_ORDER_ID" (no spaces) for specific order info. Can be found under "Your Orders" in the <a className='text-red-400' href="/dashboard">Dashboard</a>.</Text>
+
+            </Paper>
+            <Paper shadow="xs" p="md" mt="xs">
+                <Text>Locate Order Info</Text>
+                {bookingData && <>
+                    <h1>Booking Information</h1>
+                    <p>Booking ID: {bookingData.id}</p>
+                    <p>User ID: {bookingData.userId}</p>
+                    <p>Name: {bookingData.name}</p>
+                    <p>Payment type: {bookingData.paymentType}</p>
+                    <p>Total Cost: {bookingData.totalCost}</p>
+                    <p>Total tickets: {bookingData.totalVisitors}</p></>}
             </Paper>
         </Box>
     );
+
 }

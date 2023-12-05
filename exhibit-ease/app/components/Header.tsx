@@ -57,6 +57,10 @@ export default function Page() {
             <a href="/search" className={classes.link}>
               Search
             </a>
+
+            {session?.user?.role == 'C' || session?.user?.role == 'S' ? <a href="/support" className={classes.link}>
+              Support
+            </a> : <></>}
           </Group>
 
           {session ?
@@ -84,7 +88,8 @@ export default function Page() {
                   <Menu.Item
                     onClick={() => router.push(
                       session.user?.role === 'C' ? '/dashboard' :
-                        session.user?.role === 'M' ? '/admin' : '/employee'
+                        session.user?.role === 'M' ? '/admin' :
+                          session.user?.role === 'S' ? '/support' : '/employee'
                     )}
                   >
                     Dashboard
