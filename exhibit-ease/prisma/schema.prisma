@@ -1,0 +1,191 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String  @map("user_id")
+  type               String
+  provider           String
+  providerAccountId  String  @map("provider_account_id")
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+  oauth_token_secret String?
+  oauth_token        String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id             String           @id @default(cuid())
+  name           String?
+  email          String?          @unique
+  emailVerified  DateTime?
+  image          String?
+  payment        String?
+  phoneNumber    String?          @unique
+  password       String?
+  role           String           @default("C")
+  resetCode      String?          @db.VarChar(5)
+  museumId       Int?
+  museum         Museum?          @relation(fields: [museumId], references: [id])
+  accounts       Account[]
+  sessions       Session[]
+  Booking        Booking[]
+  Favorite       Favorite[]
+  Notification   Notification[]
+  customerChats  Chat[]           @relation("CustomerChats")
+  supportChats   Chat[]           @relation("SupportRepChats")
+  CreditCardInfo CreditCardInfo[]
+}
+
+model VerificationToken {
+  id         Int      @id @default(autoincrement())
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Museum {
+  id           Int            @id @default(autoincrement())
+  name         String
+  description  String?
+  main_image   String?
+  bg_image     String?
+  cost         Float
+  address      String
+  city         String
+  state        String
+  zip          Int
+  type         MuseumType
+  openHour     DateTime
+  closeHour    DateTime
+  Booking      Booking[]
+  Promo        Promo[]
+  Favorite     Favorite[]
+  User         User[]
+  Notification Notification[]
+}
+
+model Booking {
+  id               String          @id @default(cuid())
+  userId           String          @map("user_id")
+  name             String
+  bookingMade      DateTime        @default(now())
+  visitInfo        DateTime
+  paymentType      PaymentType     @default(CARD)
+  creditCardInfo   CreditCardInfo? @relation(fields: [creditCardInfoId], references: [id])
+  totalCost        Float
+  employeeBooked   Boolean         @default(false)
+  totalVisitors    Int
+  promo            Promo?          @relation(fields: [promoId], references: [id])
+  museum           Museum          @relation(fields: [museumId], references: [id])
+  user             User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  museumId         Int
+  promoId          Int?
+  creditCardInfoId String?
+}
+
+model Promo {
+  id              Int            @id @default(autoincrement())
+  promoName       String
+  active          Boolean
+  museumId        Int
+  discountPercent Float
+  museum          Museum         @relation(fields: [museumId], references: [id])
+  Booking         Booking[]
+  Notification    Notification[]
+}
+
+model Favorite {
+  id       Int    @id @default(autoincrement())
+  user     User   @relation(fields: [userId], references: [id])
+  museum   Museum @relation(fields: [museumId], references: [id])
+  userId   String
+  museumId Int
+}
+
+model Notification {
+  id       Int     @id @default(autoincrement())
+  user     User    @relation(fields: [userId], references: [id])
+  promo    Promo   @relation(fields: [promoId], references: [id])
+  museum   Museum  @relation(fields: [museumId], references: [id])
+  message  String
+  read     Boolean @default(false)
+  userId   String
+  promoId  Int
+  museumId Int
+}
+
+model Chat {
+  id           String        @id @default(cuid())
+  customerId   String
+  supportRepId String?
+  messages     ChatMessage[]
+
+  customer   User  @relation("CustomerChats", fields: [customerId], references: [id])
+  supportRep User? @relation("SupportRepChats", fields: [supportRepId], references: [id])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  chatId    String
+  senderId  String
+  text      String
+  delivered Boolean  @default(false)
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  Chat      Chat     @relation(fields: [chatId], references: [id])
+}
+
+model UserStatus {
+  userId   String  @id
+  isOnline Boolean @default(false)
+}
+
+model CreditCardInfo {
+  id           String    @id @default(cuid())
+  user         User      @relation(fields: [userId], references: [id])
+  cardNumber   String
+  expiration   String
+  securityCode String
+  userId       String
+  zipcode      String
+  Booking      Booking[]
+}
+
+enum MuseumType {
+  ART
+  HISTORY
+  SCIENCE
+}
+
+enum PaymentType {
+  CASH
+  CARD
+}
